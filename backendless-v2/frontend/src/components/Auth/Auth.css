@@ -1,0 +1,19 @@
+.auth-container{
+    background-color: bisque;    
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 100%;
+
+    flex-direction: column;
+}
+
+.auth-sign_up_in{
+    background-color: aqua;
+    width: 40%;
+    height: 50%;
+}
+
+

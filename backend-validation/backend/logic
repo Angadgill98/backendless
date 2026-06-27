@@ -1,0 +1,28 @@
+    case insertion:
+        heere send th ddata req things:
+            data but as a map 
+
+            columns name
+            table_name
+            tenant user unique identifier
+
+            token to viy the teenant froeetneed seend thee reeq 
+            another toknw to verify the tentat user user is actually the tenant user 
+            
+            
+
+        backedn then validdadteee the both teh token 
+        hecking for evrtiem for token valiudadty for thee teentat user an be onsuming 
+        an use diss +seession +manualy validation 
+
+
+        now he reeq is validadteedd we need to validate the data so using the comn name get thee schema from the req
+        and ge tteh schea from redis
+        after that store that in map 
+
+        now ocmpare th74e header in boht the maps that is schema map and data map so amthc the consreanit 
+        after it is validit then insert it   no kafka as can cause the read write inconsistency 
+        
+
+
+

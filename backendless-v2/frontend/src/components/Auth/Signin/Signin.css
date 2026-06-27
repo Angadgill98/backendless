@@ -1,0 +1,21 @@
+.sign-in-container{
+    overflow: hidden;
+    box-sizing: border-box;
+
+    background-color: blueviolet;
+
+    display: flex;
+    height:100%;
+    
+
+    flex-direction: column;
+    align-items: center;
+
+    gap: 20px;
+
+    padding-top: 100px;
+}
+.sign-in-heading{
+    color: aliceblue;
+    margin: 0;
+}

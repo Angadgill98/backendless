@@ -1,0 +1,12 @@
+go install github.com/99designs/gqlgen@latest
+gqlgen generate
+
+
+
+
+
+
+
+
+
+go install github.com/air-verse/air@latest

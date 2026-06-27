@@ -1,0 +1,188 @@
+1. Core Query Operations (mandatory)
+🔹 Filtering (WHERE / $match)
+Operation	Meaning
+eq	equals
+ne	not equals
+gt	greater than
+gte	greater or equal
+lt	less than
+lte	less or equal
+in	in array
+nin	not in array
+exists	field exists
+regex	pattern match
+🔹 Logical Operators
+Operation	Meaning
+and	all conditions must match
+or	any condition matches
+not	negate condition
+
+Example AST:
+
+{
+  "or": [
+    { "field": "salary", "op": "gt", "value": 100000 },
+    { "field": "role", "op": "eq", "value": "senior" }
+  ]
+}
+2. Field Selection (SELECT / $project)
+Operation	Meaning
+include	include field
+exclude	remove field
+alias	rename field
+computed	derived field
+
+Example:
+
+{
+  "select": {
+    "title": 1,
+    "salary": 1,
+    "companyName": { "field": "company.name" }
+  }
+}
+3. Sorting (ORDER BY / $sort)
+Operation	Meaning
+asc	ascending
+desc	descending
+
+Example:
+
+{
+  "sort": {
+    "salary": "desc",
+    "createdAt": "asc"
+  }
+}
+4. Pagination
+Operation	SQL	Mongo
+limit	LIMIT	$limit
+offset	OFFSET	$skip
+
+Example:
+
+{
+  "limit": 10,
+  "offset": 20
+}
+5. Aggregation Functions
+Operation	Meaning
+count	COUNT(*)
+sum	SUM
+avg	AVG
+min	MIN
+max	MAX
+
+Example:
+
+{
+  "aggregate": {
+    "totalSalary": { "sum": "salary" },
+    "avgSalary": { "avg": "salary" }
+  }
+}
+6. Grouping ($group / GROUP BY)
+Operation	Meaning
+groupBy	group keys
+having	filter grouped results
+
+Example:
+
+{
+  "groupBy": ["department"],
+  "having": [
+    { "field": "salary", "op": "gt", "value": 50000 }
+  ]
+}
+7. Joins / Relationships
+
+This is where SQL vs Mongo diverge.
+
+Operation	SQL	Mongo
+join	JOIN	$lookup
+leftJoin	LEFT JOIN	$lookup + preserve
+innerJoin	INNER JOIN	filtered $lookup
+
+Example:
+
+{
+  "join": {
+    "type": "left",
+    "from": "companies",
+    "localField": "companyId",
+    "foreignField": "_id",
+    "as": "company"
+  }
+}
+8. Array Operations (very Mongo-specific)
+Operation	Meaning
+unwind	flatten array
+contains	array includes value
+size	array length
+all	contains all elements
+
+Example:
+
+{
+  "unwind": "skills"
+}
+9. Nested Field Access
+Operation	Meaning
+dot	access nested field
+jsonPath	deep JSON query
+
+Example:
+
+{
+  "where": {
+    "field": "company.location.city",
+    "op": "eq",
+    "value": "Delhi"
+  }
+}
+10. Update Operations (optional extension)
+
+If you extend beyond read queries:
+
+Operation	Meaning
+set	update field
+unset	remove field
+inc	increment
+push	append to array
+pull	remove from array
+11. Advanced Logical Blocks (for full engine)
+Operation	Meaning
+caseWhen	SQL CASE WHEN
+coalesce	first non-null
+ifNull	fallback value
+12. Full AST capability summary
+
+Your compiler should support:
+
+Core
+filter
+select
+sort
+pagination
+Aggregation
+groupBy
+count/sum/avg/min/max
+Relational
+join / lookup
+Array
+unwind
+contains
+Logic
+and / or / not
+If you want next step
+
+I can now help you design:
+
+🚀 A real production-grade AST schema like Prisma / GraphQL
+
+or
+
+⚙️ The compiler architecture that converts this into:
+Postgres SQL
+MongoDB aggregation
+Redis filtering layer

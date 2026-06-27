@@ -1,0 +1,15 @@
+# --- Backend Specific ---
+backend/node_modules/
+backend/.env
+backend/dist/
+backend/build/
+
+# --- Frontend Specific ---
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# --- General ---
+*.log
+.vscode/
+.DS_Store

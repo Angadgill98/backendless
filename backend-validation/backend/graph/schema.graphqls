@@ -1,0 +1,126 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+# type Todo {
+#   id: ID!
+#   text: String!
+#   done: Boolean!
+#   user: User!
+# }
+
+# type User {
+#   id: ID!
+#   name: String!
+# }
+
+# type Query {
+#   todos: [Todo!]!
+# }
+
+# input NewTodo {
+#   text: String!
+#   userId: String!
+# }
+
+# type Mutation {
+#   createTodo(input: NewTodo!): Todo!
+# }
+
+
+
+scalar UUID
+scalar Time
+scalar JSON
+
+type User{
+  id:ID
+  user_id:UUID
+  user_name:String
+  pass_word:String
+  email:String
+  is_active:Boolean
+  refresh_toke:String
+  access_token:String
+  read_only_refresh_token:String
+  updated_at:Time
+  created_at:Time
+}
+
+
+
+
+type table_row{
+  id:ID
+  data:JSON
+}
+
+type Mutation{
+  VerifyTenantTable(input: VerifyTenantTable!): Boolean!
+
+  InsertTenantUserRow(input: InsertTenantUserRow!): Int!
+
+  ReadTenantUserRow(input: ReadTenantUserRow!): [table_row!]!
+
+  UpdateTenantUserRow(input: UpdateTenantUserRow!): table_row!
+  #delete left 
+}
+
+type users_tables{
+  user_id:UUID
+  table_id:UUID
+  table_name:String
+  # columns:
+}
+
+input VerifyTenantTable{
+  user_Id:UUID!
+  table_Id:UUID
+  table_name:String
+  column_name:String
+}
+
+input InsertTenantUserRow{
+  user_Id:UUID!
+
+  tenant_user_uuid:String!
+
+  table_Id:UUID!
+  table_name:String!
+  column_name:String!
+
+  data:JSON!
+}
+
+input ReadTenantUserRow{
+  user_Id:UUID!
+
+  tenant_user_uuid:String!
+  
+  table_Id:UUID!
+  table_name:String!
+  column_name:[String!]!
+  
+}
+
+input UpdateTenantUserRow{
+  user_Id:UUID!
+
+  tenant_user_uuid:String!
+  
+  table_Id:UUID!
+  table_name:String!
+  column_name:String!
+
+  data:JSON
+
+  row_id:Int!
+
+  path:[Pathidk!]!
+}
+
+
+input Pathidk {
+  Path: [String!]
+  Value: String
+}
