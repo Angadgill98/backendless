@@ -55,8 +55,8 @@ func RedisConfig() *redis.Client{
 	return redis
 }
 
-func (*Rdb)GetTableSchema(redis *redis.Client,table_id,tenant_id uuid.UUID,columns_name string,ctx context.Context)(error,map[string]interface{}){
-	key :=fmt.Sprintf(`tenant:%s:table:%s:column:%s`,tenant_id.String(),table_id.String(),columns_name)
+func (*Rdb)GetTableSchema(redis *redis.Client,table_id,tenant_id uuid.UUID,ctx context.Context)(error,map[string]interface{}){
+	key :=fmt.Sprintf(`schema:tenant:%s:table:%s`,tenant_id.String(),table_id.String())
 	value,err:=redis.Get(ctx,key).Result()
 	if err!=nil{
 	
@@ -69,14 +69,14 @@ func (*Rdb)GetTableSchema(redis *redis.Client,table_id,tenant_id uuid.UUID,colum
 	return nil,schema
 }
 
-func (*Rdb)SetTableSchema(data *map[string]string,redis *redis.Client,table_id,tenant_id uuid.UUID,columns_name string,ctx context.Context)(error){
+func (*Rdb)SetTableSchema(data *map[string]string,redis *redis.Client,table_id,tenant_id uuid.UUID,ctx context.Context)(error){
 	bytes, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 
 	str := string(bytes)
-	key :=fmt.Sprintf(`tenant:%s:table:%s:column:%s`,tenant_id.String(),table_id.String(),columns_name)
+	key :=fmt.Sprintf(`schema:tenant:%s:table:%s`,tenant_id.String(),table_id.String())
 	redis.Set(ctx,key,str,10*time.Minute).Err()
 	if err != nil {
 		return err
@@ -107,14 +107,18 @@ func (*Rdb)GetTables(rdb *redis.Client,tenantID uuid.UUID,ctx context.Context,) 
 	return nil,values
 }
 
-func (*Rdb)IsTableInTenantSet(rdb *redis.Client,tenantID uuid.UUID,tableID string,ctx context.Context,) (bool, error) {
+func (*Rdb)IsTableInTenantSet(rdb *redis.Client,tenantID uuid.UUID,table_name string,ctx context.Context,) (bool, error) {
 
-	key := fmt.Sprintf("tenant:%s", tenantID.String())
+	key := fmt.Sprintf("schema:tenant:%s:table_name:%s", tenantID.String(),table_name)
 
-	exists, err := rdb.SIsMember(ctx, key, tableID).Result()
+	exists, err := rdb.Exists(ctx,key).Result()
 	if err != nil {
 		return false, err
 	}
-
-	return exists, nil
+	if exists==1 {
+    // Member not found (or the set doesn't exist)
+    	return true, nil
+	}
+	
+	return false, nil
 }

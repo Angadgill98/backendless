@@ -2,12 +2,16 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"reflect"
 
 	"validation/graph/model"
-	
+
 	"validation/internals/redis"
 	"validation/internals/repo"
+	"validation/internals/routines"
+
 	"validation/internals/utils"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -31,13 +35,31 @@ type Table_service struct {
 
 
 func (s *Table_service)VerifyTenantTable(ctx *context.Context,input *model.VerifyTenantTable)(error,bool){
-	
-	err,match:=s.Repo.VerifyTenantTable(*input.TableName,input.UserID)
+	match,err:=s.Redis.IsTableInTenantSet(s.Redis.Redis,*input.TableID,*input.TableName,*ctx)
 	if err!=nil{
-		log.Printf("faield to verify the users talee %v \n",err)
-		return err,false
+
 	}
+	if !match {
+		err,match=s.Repo.VerifyTenantTable(*input.TableName,input.UserID)
+		if err!=nil{
+			log.Printf("faield to verify the users talee %v \n",err)
+			return err,false
+		}
+		schema,err:=s.Repo.GetTableSchema(*ctx,*input.TableID,input.UserID)
+		if err!=nil{
+			log.Printf("failed to ge thte table schema for flattening: %v \n",err)
+
+		}
+		flatten_schema:=s.FlattenSchema(schema,"",make(map[string]string))
+
+		routines.PushSchema(&flatten_schema,s.Redis,*input.TableID,input.UserID,*ctx)
+
+		
 	return nil,match
+	}
+
+	return nil,match
+	
 }
 
 func (s *Table_service)InsertTenantUserRow(ctx *context.Context,input *model.InsertTenantUserRow)(int,error){
@@ -56,10 +78,48 @@ func (s *Table_service)ReadTenantUserRow(ctx *context.Context,input *model.ReadT
 	return rows,nil
 }
 
-func (s *Table_service)UpdateTenantUserRow(cts *context.Context,input *model.UpdateTenantUserRow)(*model.TableRow,error){
+func (s *Table_service)UpdateTenantUserRow(ctx *context.Context,input *model.UpdateTenantUserRow)(*model.TableRow,error){
+	match,err:=s.Redis.IsTableInTenantSet(s.Redis.Redis,input.UserID,input.TableID.String(),*ctx)
+	if err!=nil{
+		log.Printf("error occured while verifying the table belong to tenant in redis %v \n",err)
+		return nil,err
+	}
+	if !match{
+		err,match=s.Repo.VerifyTenantTable(*&input.TableName,input.UserID)
+		if err!=nil{
+			log.Printf("faield to verify the  table o ftenant in db %v \n",err)
+			return nil,err
+		}
+	}
+
+	s.Redis.GetTableSchema(s.Redis.Redis,input.TableID,input.UserID,*ctx)
+
 	err,row:=s.Repo.UpdateTenantUserRow(int(input.RowID),&input.TableID,&input.ColumnName,&input.TenantUserUUID,input.Path)
 	if err!=nil{
 		return nil,err
 	}
 	return row,nil
+}
+
+func (s *Table_service)FlattenSchema(schema map[string]any, prefix string, flatten map[string]string) map[string]string {
+    for key, value := range schema {
+
+        fullKey := key
+        if prefix != "" {
+            fullKey = prefix + "." + key
+        }
+
+        if reflect.ValueOf(value).Kind() == reflect.Map {
+            m, ok := value.(map[string]any)
+            if !ok {
+                continue
+            }
+
+           s. FlattenSchema(m, fullKey, flatten)
+        } else {
+            flatten[fullKey] = fmt.Sprint(value)
+        }
+    }
+ 
+    return flatten
 }

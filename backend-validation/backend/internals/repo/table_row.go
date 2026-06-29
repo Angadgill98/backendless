@@ -2,12 +2,13 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"log"
 
 	"validation/graph/model"
-	
+
 	"validation/internals/utils"
 
 	"github.com/google/uuid"
@@ -130,7 +131,21 @@ func (r *Table_row_repo)UpdateTenantUserRow(row_id int,table_id *uuid.UUID,colum
 
 
 
+func (r *Table_row_repo)GetTableSchema(ctx context.Context,table_id  uuid.UUID,user_id uuid.UUID)(map[string]any,error){
+	query:=fmt.Sprintf(`select columns from users_tables where 
+		table_id=$1 and 
+		user_id=$2`)
+		
+	var schema =make(map[string] any)
+	err:=r.Db.QueryRow(ctx,query,table_id,user_id).Scan(&schema)
+	if err!=nil{
+		if err ==sql.ErrNoRows{
 
+		}else{
 
+		}
+	}
+	return schema,nil
+}
 
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	
 	"validation/internals/utils"
 
 	"github.com/google/uuid"
@@ -45,34 +46,35 @@ func (r *users_table_repo)GetTableScehma(tenant_id uuid.UUID,table_id uuid.UUID,
 
 type ColumnSchema map[string]interface{}
 
-func FlattenSchema(schema map[string]map[string]interface{},prefix string,result map[string]string,) {
+// func FlattenSchema(schema map[string]map[string]interface{},prefix string,result map[string]string,) {
 
-	for key, node := range schema {
+// 	for key, node := range schema {
 
-		fullKey := key
-		if prefix != "" {
-			fullKey = prefix + "." + key
-		}
+// 		fullKey := key
+// 		if prefix != "" {
+// 			fullKey = prefix + "." + key
+// 		}
 
-		for k, v := range node {
+// 		for k, v := range node {
 
-			// case 1: nested object → recurse
-			if child, ok := v.(map[string]interface{}); ok {
-				FlattenSchema(
-					map[string]map[string]interface{}{
-						k: child,
-					},
-					fullKey,
-					result,
-				)
-				continue
-			}
+// 			// case 1: nested object → recurse
+// 			if child, ok := v.(map[string]interface{}); ok {
+// 				FlattenSchema(
+// 					map[string]map[string]interface{}{
+// 						k: child,
+// 					},
+// 					fullKey,
+// 					result,
+// 				)
+// 				continue
+// 			}
 
-			// case 2: leaf value → store
-			finalKey := fullKey + "." + k
+// 			// case 2: leaf value → store
+// 			finalKey := fullKey + "." + k
 
-			// convert value to string safely
-			result[finalKey] = fmt.Sprintf("%v", v)
-		}
-	}
-}
+// 			// convert value to string safely
+// 			result[finalKey] = fmt.Sprintf("%v", v)
+// 		}
+// 	}
+// }
+
