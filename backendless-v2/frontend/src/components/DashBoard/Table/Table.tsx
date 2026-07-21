@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import type { tab } from '../Dashboard'
+import Options from './Options'
 
 
 const Table = (props:{activeTab:tab | null}) => {
@@ -15,12 +16,15 @@ const Table = (props:{activeTab:tab | null}) => {
   }, [props.activeTab])
   
   return (
-    <>
-    
-    <div>
-
+    <div style={{width:"100%",height:"100%"}}>
+        <div style={{width:"100%",height:"4%"}}>
+            <Options/>
+        </div>
+            
+        
+        
+        
     </div>
-    </>
   )
 }
 

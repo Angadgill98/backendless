@@ -6,7 +6,7 @@ const Sidebar = (props:{tabs:tab[],setActiveTabs:React.Dispatch<React.SetStateAc
     let [table_list,set_table_list]=useState<table[]>([])
     useEffect(() => {
         let load_tables=async ()=>{
-            let tables=await GetTables()
+            let tables:table[]=await GetTables()
             console.log(tables)
             set_table_list(tables)
         }
@@ -105,11 +105,12 @@ async function GetTables() :Promise<table[]> {
         if (!res.ok){
             console.log(data)
             console.log("failed to get tables")
-
+            return []
+        }else{
+            console.log(data)
+            console.log("got the table")
+            return data.data.tables
         }
-        console.log(data)
-        console.log("got the table")
-        return data.data.tables
 
     } catch (error) {
         

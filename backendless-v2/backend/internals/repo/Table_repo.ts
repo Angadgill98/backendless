@@ -57,18 +57,23 @@ export class TableRepo {
             
         }
     }
-    async FindUserTable(userid:string){
+    async FindUserTable(userid:string):Promise<any[]>{
         try {
             let query=`SELECT table_id,table_name,columns from users_tables
             where 
             user_id=$1`    
             let rows=await this.db.query(query,[userid])
             
-            if(rows.rows.length==0)throw new FindUserTableError("table not assosciated with the user","FindUserTable",400)
+            if(rows.rows.length==0){
+                this.consolelogger.info("no tables found for the user");
+                return []
+            }
+            //throw new FindUserTableError("table not assosciated with the user","FindUserTable",400)
 
             return rows.rows
         } catch (error) {
             if (error instanceof AppError) throw error
+            
             throw new Error("error while finding the user table",{cause:error})
         }
     }
@@ -112,8 +117,10 @@ export class TableRepo {
             let rows= await this.db.query(query,[table_id])
 
             if (rows.rows.length==0){
-                throw new GetTableDataError("no rows in the table","GetTableData",401)
+                this.consolelogger.info("no data in the table")
+                return []
             }
+            //throw new GetTableDataError("no rows in the table","GetTableData",401)
             return rows.rows
         } catch (error) {
             if(error instanceof AppError){
