@@ -53,7 +53,7 @@ type User{
 type table_row{
   id:ID
   data:JSON
-}
+} 
 
 type Mutation{
   VerifyTenantTable(input: VerifyTenantTable!): Boolean!
@@ -63,7 +63,13 @@ type Mutation{
   ReadTenantUserRow(input: ReadTenantUserRow!): [table_row!]!
 
   UpdateTenantUserRow(input: UpdateTenantUserRow!): table_row!
+
   #delete left 
+
+
+  Signin(input:Signin!):token!
+
+  Signup(input:Signup!):Boolean!
 }
 
 type users_tables{
@@ -71,6 +77,18 @@ type users_tables{
   table_id:UUID
   table_name:String
   # columns:
+}
+type token{
+  access_token:String
+  refresh_token:String
+}
+
+input Row{
+  table_Id:UUID!
+  table_name:String!
+  column_name:String!
+
+  data:JSON!
 }
 
 input VerifyTenantTable{
@@ -85,11 +103,7 @@ input InsertTenantUserRow{
 
   tenant_user_uuid:String!
 
-  table_Id:UUID!
-  table_name:String!
-  column_name:String!
-
-  data:JSON!
+  rows:[Row!]!
 }
 
 input ReadTenantUserRow{
@@ -124,3 +138,26 @@ input Pathidk {
   Path: [String!]
   Value: String
 }
+
+
+
+input Signup{
+  table_name:String
+  table_id:String
+  
+  username:String
+  mail:String
+  pass:String
+}
+
+
+input Signin{
+  table_name:String
+  table_id:String
+  
+  username:String
+  mail:String
+  pass:String
+}
+
+

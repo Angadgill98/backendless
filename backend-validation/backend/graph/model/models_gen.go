@@ -9,12 +9,9 @@ import (
 )
 
 type InsertTenantUserRow struct {
-	UserID         uuid.UUID      `json:"user_Id"`
-	TenantUserUUID string         `json:"tenant_user_uuid"`
-	TableID        uuid.UUID      `json:"table_Id"`
-	TableName      string         `json:"table_name"`
-	ColumnName     string         `json:"column_name"`
-	Data           map[string]any `json:"data"`
+	UserID         uuid.UUID `json:"user_Id"`
+	TenantUserUUID string    `json:"tenant_user_uuid"`
+	Rows           []*Row    `json:"rows"`
 }
 
 type Mutation struct {
@@ -34,6 +31,29 @@ type ReadTenantUserRow struct {
 	TableID        uuid.UUID `json:"table_Id"`
 	TableName      string    `json:"table_name"`
 	ColumnName     []string  `json:"column_name"`
+}
+
+type Row struct {
+	TableID    uuid.UUID      `json:"table_Id"`
+	TableName  string         `json:"table_name"`
+	ColumnName string         `json:"column_name"`
+	Data       map[string]any `json:"data"`
+}
+
+type Signin struct {
+	TableName *string `json:"table_name,omitempty"`
+	TableID   *string `json:"table_id,omitempty"`
+	Username  *string `json:"username,omitempty"`
+	Mail      *string `json:"mail,omitempty"`
+	Pass      *string `json:"pass,omitempty"`
+}
+
+type Signup struct {
+	TableName *string `json:"table_name,omitempty"`
+	TableID   *string `json:"table_id,omitempty"`
+	Username  *string `json:"username,omitempty"`
+	Mail      *string `json:"mail,omitempty"`
+	Pass      *string `json:"pass,omitempty"`
 }
 
 type UpdateTenantUserRow struct {
@@ -71,6 +91,11 @@ type VerifyTenantTable struct {
 type TableRow struct {
 	ID   *string        `json:"id,omitempty"`
 	Data map[string]any `json:"data,omitempty"`
+}
+
+type Token struct {
+	AccessToken  *string `json:"access_token,omitempty"`
+	RefreshToken *string `json:"refresh_token,omitempty"`
 }
 
 type UsersTables struct {

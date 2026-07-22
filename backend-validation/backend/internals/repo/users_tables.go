@@ -16,9 +16,9 @@ func CreateUsers_TableRepo(db *pgxpool.Pool) *users_table_repo {
 	return &users_table_repo{
 		Db:   db,
 		Util: utils.CreateUtilService(),
-	}
+	} 
 }
-type users_table_repo struct{
+type users_table_repo struct{ 
 	Db *pgxpool.Pool
 	Util *utils.Util
 }

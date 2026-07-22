@@ -41,6 +41,8 @@ type ComplexityRoot struct {
 	Mutation struct {
 		InsertTenantUserRow func(childComplexity int, input model.InsertTenantUserRow) int
 		ReadTenantUserRow   func(childComplexity int, input model.ReadTenantUserRow) int
+		Signin              func(childComplexity int, input model.Signin) int
+		Signup              func(childComplexity int, input model.Signup) int
 		UpdateTenantUserRow func(childComplexity int, input model.UpdateTenantUserRow) int
 		VerifyTenantTable   func(childComplexity int, input model.VerifyTenantTable) int
 	}
@@ -67,6 +69,11 @@ type ComplexityRoot struct {
 		ID   func(childComplexity int) int
 	}
 
+	Token struct {
+		AccessToken  func(childComplexity int) int
+		RefreshToken func(childComplexity int) int
+	}
+
 	Users_tables struct {
 		TableID   func(childComplexity int) int
 		TableName func(childComplexity int) int
@@ -83,6 +90,8 @@ type MutationResolver interface {
 	InsertTenantUserRow(ctx context.Context, input model.InsertTenantUserRow) (int32, error)
 	ReadTenantUserRow(ctx context.Context, input model.ReadTenantUserRow) ([]*model.TableRow, error)
 	UpdateTenantUserRow(ctx context.Context, input model.UpdateTenantUserRow) (*model.TableRow, error)
+	Signin(ctx context.Context, input model.Signin) (*model.Token, error)
+	Signup(ctx context.Context, input model.Signup) (bool, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -125,6 +134,28 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.ReadTenantUserRow(childComplexity, args["input"].(model.ReadTenantUserRow)), true
+	case "Mutation.Signin":
+		if e.ComplexityRoot.Mutation.Signin == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_Signin_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.Signin(childComplexity, args["input"].(model.Signin)), true
+	case "Mutation.Signup":
+		if e.ComplexityRoot.Mutation.Signup == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_Signup_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.Signup(childComplexity, args["input"].(model.Signup)), true
 	case "Mutation.UpdateTenantUserRow":
 		if e.ComplexityRoot.Mutation.UpdateTenantUserRow == nil {
 			break
@@ -228,6 +259,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.ComplexityRoot.Table_row.ID(childComplexity), true
 
+	case "token.access_token":
+		if e.ComplexityRoot.Token.AccessToken == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Token.AccessToken(childComplexity), true
+	case "token.refresh_token":
+		if e.ComplexityRoot.Token.RefreshToken == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Token.RefreshToken(childComplexity), true
+
 	case "users_tables.table_id":
 		if e.ComplexityRoot.Users_tables.TableID == nil {
 			break
@@ -258,6 +302,9 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputInsertTenantUserRow,
 		ec.unmarshalInputPathidk,
 		ec.unmarshalInputReadTenantUserRow,
+		ec.unmarshalInputRow,
+		ec.unmarshalInputSignin,
+		ec.unmarshalInputSignup,
 		ec.unmarshalInputUpdateTenantUserRow,
 		ec.unmarshalInputVerifyTenantTable,
 	)
@@ -476,6 +523,16 @@ func (ec *executionContext) childFields_table_row(ctx context.Context, field gra
 	return nil, fmt.Errorf("no field named %q was found under type table_row", field.Name)
 }
 
+func (ec *executionContext) childFields_token(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "access_token":
+		return ec.fieldContext_token_access_token(ctx, field)
+	case "refresh_token":
+		return ec.fieldContext_token_refresh_token(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type token", field.Name)
+}
+
 // endregion ************************** internal!.gotpl ***************************
 
 // region    ***************************** args.gotpl *****************************
@@ -500,6 +557,34 @@ func (ec *executionContext) field_Mutation_ReadTenantUserRow_args(ctx context.Co
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input",
 		func(ctx context.Context, v any) (model.ReadTenantUserRow, error) {
 			return ec.unmarshalNReadTenantUserRow2validationᚋgraphᚋmodelᚐReadTenantUserRow(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_Signin_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input",
+		func(ctx context.Context, v any) (model.Signin, error) {
+			return ec.unmarshalNSignin2validationᚋgraphᚋmodelᚐSignin(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_Signup_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input",
+		func(ctx context.Context, v any) (model.Signup, error) {
+			return ec.unmarshalNSignup2validationᚋgraphᚋmodelᚐSignup(ctx, v)
 		})
 	if err != nil {
 		return nil, err
@@ -780,6 +865,94 @@ func (ec *executionContext) fieldContext_Mutation_UpdateTenantUserRow(ctx contex
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_UpdateTenantUserRow_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_Signin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Mutation_Signin(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().Signin(ctx, fc.Args["input"].(model.Signin))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.Token) graphql.Marshaler {
+			return ec.marshalNtoken2ᚖvalidationᚋgraphᚋmodelᚐToken(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Mutation_Signin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_token(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_Signin_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_Signup(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Mutation_Signup(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().Signup(ctx, fc.Args["input"].(model.Signup))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
+			return ec.marshalNBoolean2bool(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Mutation_Signup(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_Signup_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2216,6 +2389,52 @@ func (ec *executionContext) fieldContext_table_row_data(_ context.Context, field
 	return graphql.NewScalarFieldContext("table_row", field, false, false, errors.New("field of type JSON does not have child fields"))
 }
 
+func (ec *executionContext) _token_access_token(ctx context.Context, field graphql.CollectedField, obj *model.Token) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_token_access_token(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.AccessToken, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *string) graphql.Marshaler {
+			return ec.marshalOString2ᚖstring(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_token_access_token(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("token", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _token_refresh_token(ctx context.Context, field graphql.CollectedField, obj *model.Token) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_token_refresh_token(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.RefreshToken, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *string) graphql.Marshaler {
+			return ec.marshalOString2ᚖstring(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_token_refresh_token(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("token", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
 func (ec *executionContext) _users_tables_user_id(ctx context.Context, field graphql.CollectedField, obj *model.UsersTables) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -2300,7 +2519,7 @@ func (ec *executionContext) unmarshalInputInsertTenantUserRow(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"user_Id", "tenant_user_uuid", "table_Id", "table_name", "column_name", "data"}
+	fieldsInOrder := [...]string{"user_Id", "tenant_user_uuid", "rows"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2321,34 +2540,13 @@ func (ec *executionContext) unmarshalInputInsertTenantUserRow(ctx context.Contex
 				return it, err
 			}
 			it.TenantUserUUID = data
-		case "table_Id":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("table_Id"))
-			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+		case "rows":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rows"))
+			data, err := ec.unmarshalNRow2ᚕᚖvalidationᚋgraphᚋmodelᚐRowᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.TableID = data
-		case "table_name":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("table_name"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.TableName = data
-		case "column_name":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("column_name"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ColumnName = data
-		case "data":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
-			data, err := ec.unmarshalNJSON2map(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Data = data
+			it.Rows = data
 		}
 	}
 	return it, nil
@@ -2444,6 +2642,173 @@ func (ec *executionContext) unmarshalInputReadTenantUserRow(ctx context.Context,
 				return it, err
 			}
 			it.ColumnName = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputRow(ctx context.Context, obj any) (model.Row, error) {
+	var it model.Row
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"table_Id", "table_name", "column_name", "data"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "table_Id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("table_Id"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TableID = data
+		case "table_name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("table_name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TableName = data
+		case "column_name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("column_name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ColumnName = data
+		case "data":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
+			data, err := ec.unmarshalNJSON2map(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Data = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSignin(ctx context.Context, obj any) (model.Signin, error) {
+	var it model.Signin
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"table_name", "table_id", "username", "mail", "pass"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "table_name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("table_name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TableName = data
+		case "table_id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("table_id"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TableID = data
+		case "username":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Username = data
+		case "mail":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mail"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Mail = data
+		case "pass":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pass"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Pass = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSignup(ctx context.Context, obj any) (model.Signup, error) {
+	var it model.Signup
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"table_name", "table_id", "username", "mail", "pass"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "table_name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("table_name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TableName = data
+		case "table_id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("table_id"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TableID = data
+		case "username":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Username = data
+		case "mail":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mail"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Mail = data
+		case "pass":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pass"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Pass = data
 		}
 	}
 	return it, nil
@@ -2631,6 +2996,20 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "UpdateTenantUserRow":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_UpdateTenantUserRow(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "Signin":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_Signin(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "Signup":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_Signup(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -3230,6 +3609,49 @@ func (ec *executionContext) _table_row(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
+var tokenImplementors = []string{"token"}
+
+func (ec *executionContext) _token(ctx context.Context, sel ast.SelectionSet, obj *model.Token) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, tokenImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("token")
+		case "access_token":
+			out.Values[i] = ec._token_access_token(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "refresh_token":
+			out.Values[i] = ec._token_refresh_token(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
 var users_tablesImplementors = []string{"users_tables"}
 
 func (ec *executionContext) _users_tables(ctx context.Context, sel ast.SelectionSet, obj *model.UsersTables) graphql.Marshaler {
@@ -3363,6 +3785,36 @@ func (ec *executionContext) unmarshalNPathidk2ᚖvalidationᚋgraphᚋmodelᚐPa
 
 func (ec *executionContext) unmarshalNReadTenantUserRow2validationᚋgraphᚋmodelᚐReadTenantUserRow(ctx context.Context, v any) (model.ReadTenantUserRow, error) {
 	res, err := ec.unmarshalInputReadTenantUserRow(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNRow2ᚕᚖvalidationᚋgraphᚋmodelᚐRowᚄ(ctx context.Context, v any) ([]*model.Row, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.Row, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNRow2ᚖvalidationᚋgraphᚋmodelᚐRow(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNRow2ᚖvalidationᚋgraphᚋmodelᚐRow(ctx context.Context, v any) (*model.Row, error) {
+	res, err := ec.unmarshalInputRow(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSignin2validationᚋgraphᚋmodelᚐSignin(ctx context.Context, v any) (model.Signin, error) {
+	res, err := ec.unmarshalInputSignin(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSignup2validationᚋgraphᚋmodelᚐSignup(ctx context.Context, v any) (model.Signup, error) {
+	res, err := ec.unmarshalInputSignup(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -3607,6 +4059,20 @@ func (ec *executionContext) marshalNtable_row2ᚖvalidationᚋgraphᚋmodelᚐTa
 		return graphql.Null
 	}
 	return ec._table_row(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNtoken2validationᚋgraphᚋmodelᚐToken(ctx context.Context, sel ast.SelectionSet, v model.Token) graphql.Marshaler {
+	return ec._token(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNtoken2ᚖvalidationᚋgraphᚋmodelᚐToken(ctx context.Context, sel ast.SelectionSet, v *model.Token) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._token(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v any) (bool, error) {

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 
 	"validation/graph/model"
 
@@ -52,17 +53,16 @@ func (r *Table_row_repo)VerifyTenantTable(table_name string,tenant_id uuid.UUID)
 
 }
 
-func (r * Table_row_repo)InsertTenantUserRow(ctx *context.Context,table_id *uuid.UUID,column_name *string,tenant_user_uni_identifier *string,data *map[string]any)(error,int){
+func (r * Table_row_repo)InsertTenantUserRow(ctx *context.Context,table_rows []Table_row)(error,int){
 	query:=fmt.Sprintf(`insert into table_row(
 	table_id, column_name, tenant_user_identifier, data)
-	VALUES (
-	$1, $2, $3, $4)
-	Returning id
+	VALUES 
 	`)
+	query,args:=r.InsertQueryBuilder(query,table_rows)
 
 	
 	var row_id int
-	rows:=r.Db.QueryRow(*ctx,query,table_id,column_name,tenant_user_uni_identifier,data)
+	rows:=r.Db.QueryRow(*ctx,query,args...)
 	
 	err:=rows.Scan(&row_id)
 	if err!=nil{
@@ -75,6 +75,32 @@ func (r * Table_row_repo)InsertTenantUserRow(ctx *context.Context,table_id *uuid
 	}
 
 	return nil,row_id
+}
+func (r *Table_row_repo)InsertQueryBuilder(query string,table_rows []Table_row)(string,[]interface{}){
+	placeholders := []string{}
+	args := []interface{}{}
+
+	for i, row := range table_rows {
+		placeholders = append(
+			placeholders,
+			fmt.Sprintf("($%v, $%v, $%v, $%v)", i*4+1, i*4+2, i*4+3, i*4+4),
+		)
+
+		args = append(args,row.Table_id, row.Column_name, row.Tenant_user_uni_identifier,row.Data)
+	}
+	query = fmt.Sprintf(
+			"%v %s",
+			query,strings.Join(placeholders, ","),
+		)
+
+	query=fmt.Sprintf("%v Returning id",query)
+	return query,args
+}
+type  Table_row struct{
+	Table_id uuid.UUID
+	Column_name string
+	Tenant_user_uni_identifier string
+	Data map[string]any  
 }
 
 func (r *Table_row_repo)ReadTenantUserRow(table_id uuid.UUID,column_name []string,tenant_user_uni_identifier string)(error,[]*model.TableRow){

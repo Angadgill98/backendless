@@ -63,7 +63,20 @@ func (s *Table_service)VerifyTenantTable(ctx *context.Context,input *model.Verif
 }
 
 func (s *Table_service)InsertTenantUserRow(ctx *context.Context,input *model.InsertTenantUserRow)(int,error){
-	err,row_id:=s.Repo.InsertTenantUserRow(ctx,&input.TableID,&input.ColumnName,&input.TenantUserUUID,&input.Data)
+	rows := make([]repo.Table_row, 0, len(input.Rows))
+
+	for _, r := range input.Rows {
+		rows = append(rows, repo.Table_row{
+			Table_id:                   r.TableID,
+			// tablename:                 r.TableName,
+			Column_name:                r.ColumnName,
+			Tenant_user_uni_identifier: input.TenantUserUUID,
+			Data:                       r.Data,
+		})
+	}
+	
+
+	err,row_id:=s.Repo.InsertTenantUserRow(ctx,rows)
 	if err!=nil{
 		return -1,err
 	}
