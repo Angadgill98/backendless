@@ -30,7 +30,7 @@ const Dashboard = () => {
 
           <div style={{display:"flex",height:"100%",width:"100%",flexDirection:"column"}}>
             <div className="dashboard-table-tab">
-              <Tab tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab}/>
+              <Tab tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} setActiveTabs={setActiveTabs}/>
             </div>
 
             <div className="dashboard-table">
@@ -49,4 +49,5 @@ export default Dashboard;
 export type tab={
   tab_name:string
   table_id:string
+  columns:any
 }

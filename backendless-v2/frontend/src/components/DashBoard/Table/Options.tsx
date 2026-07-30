@@ -1,20 +1,21 @@
 import React, { useRef, useState } from 'react'
 import "./options.css"
-const Options = () => {
+import type { tab } from '../Dashboard';
+const Options = (props:{activeTab:tab}) => {
     let [modal,setmodal]=useState(false);
     
 
     return (
     <div className='options-contianer'>
         <button onClick={()=>{setmodal(prev=>!prev)}}>Create Columns </button>
-        {modal && <Modal setmodal={setmodal} />}
+        {modal && <Modal aciivetab={props.activeTab} setmodal={setmodal} />}
     </div>
   )
 }
 
 export default Options
 
-function Modal(props:{setmodal:React.Dispatch<React.SetStateAction<boolean>>}){
+function Modal(props:{setmodal:React.Dispatch<React.SetStateAction<boolean>>,aciivetab:tab}){
     let [isadd,setadd]=useState(false)
     let [type,settype]=useState("int")
     let column_name=useRef<HTMLInputElement>(null);
@@ -23,7 +24,7 @@ function Modal(props:{setmodal:React.Dispatch<React.SetStateAction<boolean>>}){
         setadd(true)
         if (!column_name.current?.value.trim()) return
 
-        CreateColumn(type,column_name.current?.value)
+        CreateColumn(type,column_name.current?.value,props.aciivetab.table_id,props.aciivetab?.tab_name)
 
         setadd(false)
     }
@@ -31,7 +32,7 @@ function Modal(props:{setmodal:React.Dispatch<React.SetStateAction<boolean>>}){
     return(
         <div className='modal-backdrop' onClick={()=>{props.setmodal(prev=>!prev)}}>
             
-            <div className='modal'>
+            <div className='modal' onClick={(e) => e.stopPropagation()}>
                 <input ref={column_name} type='text' placeholder='Enter the anme fo the columns'></input>
                 
                 <p>Select a type</p>
@@ -55,15 +56,25 @@ function Modal(props:{setmodal:React.Dispatch<React.SetStateAction<boolean>>}){
 }
 
 
-async function CreateColumn(type:string,column_name:string){
+async function CreateColumn(type:string,column_name:string,table_id:string,table_name:string){
     try {
-        let res=await fetch(`${import.meta.env.VITE_API_URL}/create-columns/api`,{
+        let res=await fetch(`${import.meta.env.VITE_API_URL}/api/create-columns`,{
             method:"POST",
             headers:{
                 "Content-Type": "application/json",
             },
             credentials:"include",
-            body:JSON.stringify({})
+            body:JSON.stringify({
+                table_id,
+                table_name,
+                columns:[
+                    {
+                        [column_name]:{
+                            type
+                        }
+                    }
+                ]
+            })
         })
         let data=await res.json()
 
@@ -77,6 +88,6 @@ async function CreateColumn(type:string,column_name:string){
 
     } catch (error) {
         console.log("error occured while creating column; ",error)
-        
+
     }
 }

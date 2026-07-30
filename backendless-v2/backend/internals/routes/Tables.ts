@@ -12,5 +12,6 @@ export function SetupTableRoutes(router:Router,db:Pool,rdb:RedisClientType){
     router.post("/create-columns",tablehandler.CreateColumns)
     router.put("/update-columns",tablehandler.UpdateColumnSchema)
     router.post("/get-table-data",tablehandler.GetTableData)
+    router.delete("/delete-table",tablehandler.DeleteTable)
     console.log("tables routes set up complete")
-}
+} 

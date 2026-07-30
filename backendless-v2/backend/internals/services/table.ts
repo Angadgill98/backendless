@@ -57,7 +57,22 @@ export class TableServices {
      
             let flattenSchema=this.utils.FlattenSchema(Object.assign({}, ...columns))
             this.consolelogger.info("flatten schema is: ",flattenSchema)
-            await this.redis.SetFlattenSchema(user_id,table_name,flattenSchema)
+
+            let isexist:number=await this.redis.IsExist(user_id,table_name)
+            if (isexist) {
+                let old_schmea:Map<String,String>=await this.redis.GetFlatenSchema(user_id,table_name)
+                let oldSchemaRecord:Record<string,string> = Object.fromEntries(old_schmea);
+
+                let combined = {
+                    ...oldSchemaRecord,
+                    ...flattenSchema,
+                };
+                await this.redis.UpdateFlattenSchema(user_id,table_name,combined)
+            }else{
+                await this.redis.SetFlattenSchema(user_id,table_name,flattenSchema)
+            }
+
+            
             await this.table_repo.CreateColumns(table_id,columns)
         } catch (error) {
             if (error instanceof AppError){
@@ -72,10 +87,16 @@ export class TableServices {
         try {
             let flattenSchema=this.utils.FlattenSchema(Object.assign({}, ...columns))
             this.consolelogger.info("flatten schema is: ",flattenSchema)
-            
+
+            let oldSchema = await this.redis.GetFlatenSchema(userid, table_name);
+            let oldSchemaRecord: Record<string, string> = Object.fromEntries(oldSchema);
+
+            // Update only the keys present in flattenSchema
+            Object.assign(oldSchemaRecord, flattenSchema);
+
             await this.table_repo.CreateColumns(table_id,columns)
 
-            await this.redis.UpdateFlattenSchema(userid,table_name,flattenSchema)
+            await this.redis.UpdateFlattenSchema(userid,table_name,oldSchemaRecord)
             
         } catch (error) {
             if (error instanceof AppError){
@@ -90,6 +111,8 @@ export class TableServices {
     async GetTableData(userid:UUID,table_id:UUID){
         try {
             let rows=await this.table_repo.GetTableData(userid,table_id)
+            // let columns=await this.table_repo.GetColumns(userid,table_id)
+            // return {table_data:rows,columns}
             return rows
         } catch (error) {
             if  (error instanceof AppError){
@@ -97,6 +120,16 @@ export class TableServices {
             }
             throw error
         }
+    }
+
+    async DeleteTable(tenant_id:UUID,table_id:UUID){
+        try {
+            await this.table_repo.DeleteTable(tenant_id,table_id)
+            await this.table_repo.DeleteTableRows(table_id)    
+        } catch (error) {
+            throw error    
+        }
+        
     }
     
    

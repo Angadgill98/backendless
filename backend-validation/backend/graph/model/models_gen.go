@@ -34,10 +34,9 @@ type ReadTenantUserRow struct {
 }
 
 type Row struct {
-	TableID    uuid.UUID      `json:"table_Id"`
-	TableName  string         `json:"table_name"`
-	ColumnName string         `json:"column_name"`
-	Data       map[string]any `json:"data"`
+	TableID   uuid.UUID      `json:"table_Id"`
+	TableName string         `json:"table_name"`
+	Data      map[string]any `json:"data"`
 }
 
 type Signin struct {

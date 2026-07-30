@@ -2658,7 +2658,7 @@ func (ec *executionContext) unmarshalInputRow(ctx context.Context, obj any) (mod
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"table_Id", "table_name", "column_name", "data"}
+	fieldsInOrder := [...]string{"table_Id", "table_name", "data"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2679,13 +2679,6 @@ func (ec *executionContext) unmarshalInputRow(ctx context.Context, obj any) (mod
 				return it, err
 			}
 			it.TableName = data
-		case "column_name":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("column_name"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ColumnName = data
 		case "data":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
 			data, err := ec.unmarshalNJSON2map(ctx, v)

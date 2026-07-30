@@ -112,7 +112,7 @@ export class TableRepo {
 
     async GetTableData(user_id:UUID,table_id:UUID){
         try {
-            let query="SELECT id,column_name,tenant_user_identifier,data FROM table_row where table_id=$1"
+            let query="SELECT id,tenant_user_identifier,data FROM table_row where table_id=$1"
 
             let rows= await this.db.query(query,[table_id])
 
@@ -127,6 +127,51 @@ export class TableRepo {
                 throw error
             }
             throw new Error("unabel to get table data",{cause:error})
+        }
+    }
+ 
+    async GetColumns(user_id:UUID,table_id:UUID){
+        try {
+            let query="SELECT columns from users_tables where user_id=$1 and table_id=$2"
+            let rows=await this.db.query(query,[user_id,table_id])
+            if (rows.rows.length==0){
+                this.consolelogger.info("no data in the table")
+                return []
+            }
+            return rows.rows
+
+        } catch (error) {
+            throw new Error("unabel to get columns ",{cause:error})
+        }
+    }                     
+
+    async DeleteTable(tenant_id:UUID,table_id:UUID){
+        try {
+            let query="delete from users_tables where user_id=$1 and table_id=$2"
+            let rows=await this.db.query(query,[tenant_id,table_id])
+
+            if (rows.rowCount==0){
+                this.consolelogger.info("no table was delted for the user")
+                return
+            }
+
+        } catch (error) {
+            throw new Error("failed to delte the table",{cause:error})
+        }
+    }   
+    
+    async DeleteTableRows(table_id:UUID){
+        try {
+            let query="delete from table_row where table_id=$1"
+            let rows=await this.db.query(query,[table_id])
+
+            if (rows.rowCount==0){
+                this.consolelogger.info("no table rows was delted for the user")
+                return
+            }
+
+        } catch (error) {
+            throw new Error("failed to delte the table rows",{cause:error})
         }
     }
 }

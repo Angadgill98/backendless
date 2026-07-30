@@ -36,7 +36,7 @@ export class Redis_repo{
        
     }
 
-    async GetFlatenSchema(tenant_id:UUID,table_name:string){
+    async GetFlatenSchema(tenant_id:UUID,table_name:string):Promise<Map<String,String>>{
         try {
             // let types=await this.rdb.hmGet("tenant_id:"+tenant_id+":"+"table_name:"+table_name,column)
             // let result: Map<string, string | null|undefined> = {};
@@ -54,7 +54,8 @@ export class Redis_repo{
 
 
         } catch (error) {
-            
+            this.consoleLogger.info("no schem found in the redis")
+            return new Map();
         }
     }
 
@@ -71,5 +72,12 @@ export class Redis_repo{
             throw error
         }
        
+    }
+
+
+    async IsExist(tenant_id:UUID,table_name:string):Promise<number>{
+        const key = `schema:tenant_id:${tenant_id}:table_name:${table_name}`;
+        return await this.rdb.exists(key);
+
     }
 }

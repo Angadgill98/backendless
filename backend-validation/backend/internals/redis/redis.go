@@ -2,14 +2,16 @@ package redis
 
 import (
 	"context"
-	"encoding/json"
+
 	"fmt"
 	"log"
 	"os"
 	"strconv"
-	"time"
+
+	"validation/error"
 
 	"github.com/google/uuid"
+	
 	"github.com/redis/go-redis/v9"
 )
 
@@ -55,37 +57,42 @@ func RedisConfig() *redis.Client{
 	return redis
 }
 
-func (*Rdb)GetTableSchema(redis *redis.Client,table_id,tenant_id uuid.UUID,ctx context.Context)(error,map[string]interface{}){
-	key :=fmt.Sprintf(`schema:tenant:%s:table:%s`,tenant_id.String(),table_id.String())
-	value,err:=redis.Get(ctx,key).Result()
-	if err!=nil{
+func (*Rdb)GetTableSchema(redis *redis.Client,table_name string,tenant_id uuid.UUID,ctx context.Context)(error,map[string]string){
+	key :=fmt.Sprintf(`schema:tenant_id:%s:table_name:%s`,tenant_id.String(),table_name)
 	
+	value,err:=redis.HGetAll(ctx,key).Result()
+	if err!=nil{
+		println("error occured while get thte table schema %v",err);
 		return err,nil
 	}
-	var schema map[string]interface{}
-	if err := json.Unmarshal([]byte(value), &schema); err != nil {
-		return err,nil
+
+	if len(value)==0{
+		println("data not found in redsis db")
+		return custom_error.AppError{Err: custom_error.NoRowsInRedis{}},nil
 	}
-	return nil,schema
+	
+	return nil,value
 }
 
-func (*Rdb)SetTableSchema(data *map[string]string,redis *redis.Client,table_id,tenant_id uuid.UUID,ctx context.Context)(error){
-	bytes, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
+func (*Rdb)SetTableSchema(data *map[string]string,redis *redis.Client,table_name string,tenant_id uuid.UUID,ctx context.Context)(error){
+	key := fmt.Sprintf(
+        `schema:tenant_id:%s:table_name:%s`,
+        tenant_id.String(),
+        table_name,
+    )
 
-	str := string(bytes)
-	key :=fmt.Sprintf(`schema:tenant:%s:table:%s`,tenant_id.String(),table_id.String())
-	redis.Set(ctx,key,str,10*time.Minute).Err()
-	if err != nil {
-		return err
-	}
+    if err := redis.HSet(ctx, key, *data).Err(); err != nil {
+        return err
+    }
+
+    // if err := redis.Expire(ctx, key, 10*time.Minute).Err(); err != nil {
+    //     return err
+    // }
 	return nil
 }
 
 func (*Rdb)SetTable(redis *redis.Client,table_id,tenant_id uuid.UUID,ctx context.Context)error{
-	key := fmt.Sprintf("tenant:%s", tenant_id.String())
+	key := fmt.Sprintf("tenant_id:%s", tenant_id.String())
 
 	err := redis.SAdd(ctx, key, table_id).Err()
 	if err != nil {
@@ -97,7 +104,7 @@ func (*Rdb)SetTable(redis *redis.Client,table_id,tenant_id uuid.UUID,ctx context
 
 func (*Rdb)GetTables(rdb *redis.Client,tenantID uuid.UUID,ctx context.Context,) (error,[]string ) {
 
-	key := fmt.Sprintf("tenant:%s", tenantID.String())
+	key := fmt.Sprintf("tenant_id:%s", tenantID.String())
 
 	values, err := rdb.SMembers(ctx, key).Result()
 	if err != nil {
@@ -109,7 +116,7 @@ func (*Rdb)GetTables(rdb *redis.Client,tenantID uuid.UUID,ctx context.Context,) 
 
 func (*Rdb)IsTableInTenantSet(rdb *redis.Client,tenantID uuid.UUID,table_name string,ctx context.Context,) (bool, error) {
 
-	key := fmt.Sprintf("schema:tenant:%s:table_name:%s", tenantID.String(),table_name)
+	key := fmt.Sprintf("schema:tenant_id:%s:table_name:%s", tenantID.String(),table_name)
 
 	exists, err := rdb.Exists(ctx,key).Result()
 	if err != nil {

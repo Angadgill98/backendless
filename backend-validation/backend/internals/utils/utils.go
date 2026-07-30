@@ -32,3 +32,9 @@ func (u *Util)JsonbPathQueryBuilder(path []*model.Pathidk) string {
 
 	return query
 }
+
+
+
+
+
+ 

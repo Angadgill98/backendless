@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, type HTMLInputTypeAttribute } from 'react'
-import { data } from 'react-router-dom'
 import type { tab } from '../Dashboard'
 
 const Sidebar = (props:{tabs:tab[],setActiveTabs:React.Dispatch<React.SetStateAction<tab[]>>,setActiveTab:React.Dispatch<React.SetStateAction<tab|null>>}) => {
@@ -26,7 +25,7 @@ const Sidebar = (props:{tabs:tab[],setActiveTabs:React.Dispatch<React.SetStateAc
 
         let temp= async()=> {
             let table_id=await AddTable(table.current!.value)
-            if( typeof table_id ==="string") set_table_list([...table_list,{table_id,table_name:table.current!.value}])
+            if( typeof table_id ==="string") set_table_list([...table_list,{table_id,table_name:table.current!.value,columns:{}}])
             
         }
         temp()
@@ -48,7 +47,10 @@ const Sidebar = (props:{tabs:tab[],setActiveTabs:React.Dispatch<React.SetStateAc
             {table_list.length >0 && table_list.map((value,index)=>{
                 return(
                    
-                        <li onClick={()=>{OpenTab(value.table_id,value.table_name,props.setActiveTabs,props.tabs,props.setActiveTab)}} key={value.table_id} id={value.table_id}>{value.table_name}</li>
+                        <li onClick={()=>{OpenTab(value.table_id,value.table_name,props.setActiveTabs,props.tabs,props.setActiveTab,value.columns)}} key={value.table_id} id={value.table_id}>
+                            {value.table_name}
+                            <button onClick={(e)=>{e.stopPropagation();DeleteTable(value,table_list,set_table_list)}}>x</button>
+                        </li>
                    
                 )
             })}
@@ -122,10 +124,39 @@ async function GetTables() :Promise<table[]> {
 
 type table={
     table_id:string
-    table_name:string
+    table_name:string,
+    columns:any
 }
 
+async function DeleteTable(table:table,table_list:table[],set_table_list: React.Dispatch<React.SetStateAction<table[]>>){
+    
+    try {
+        let res=await fetch(`${import.meta.env.VITE_API_URL}/api/delete-table`,{
+            method:"DELETE",
+            headers:{
+                "Content-Type": "application/json",
+            },
+            credentials:'include',
+            body:JSON.stringify({
+                table_id:table.table_id,
+                table_name:table.table_name
+            })
+        })
 
+        let data=await res.json()
+
+        if (!res.ok){
+            console.log("failed to delte the table")
+        }else{
+            console.log("delted the table")
+            set_table_list((prev) =>
+                prev.filter((t) => t.table_id !== table.table_id)
+            );
+        }
+    } catch (error) {
+        console.log("error whiel delteing the table ",error)
+    }
+}
 
 
 
@@ -137,7 +168,8 @@ function OpenTab(
     table_name: string,
     setActiveTabs: React.Dispatch<React.SetStateAction<tab[]>>,
     tabs: tab[],
-    setActiveTab: React.Dispatch<React.SetStateAction<tab | null>>
+    setActiveTab: React.Dispatch<React.SetStateAction<tab | null>>,
+    columns:any
 ) {
     const exists = tabs.some(
         (t) => t.table_id === table_id
@@ -149,6 +181,7 @@ function OpenTab(
             {
                 tab_name: table_name,
                 table_id,
+                columns
             },
         ]);
     }
@@ -156,5 +189,6 @@ function OpenTab(
     setActiveTab({
         tab_name: table_name,
         table_id,
+        columns
     });
 }

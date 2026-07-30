@@ -86,8 +86,6 @@ type token{
 input Row{
   table_Id:UUID!
   table_name:String!
-  column_name:String!
-
   data:JSON!
 }
 

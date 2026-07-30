@@ -114,7 +114,6 @@ export class Tablehandler {
         try {
             let tenant_id=req.user.userid
             let table_id=req.body.table_id
-
             let rows=await this.services.GetTableData(tenant_id,table_id)
             this.utils.SendResponse(200,"success",true,res,{rows})
         } catch (error) {
@@ -122,6 +121,23 @@ export class Tablehandler {
                 
             }
             this.consolelogger.error("failed to get table data ",{body:
+               req.body,
+                error
+            })
+            this.utils.SendResponse(400,"failed",false,res,{})
+        }
+    } 
+
+    DeleteTable:RequestHandler=async (req,res)=>{
+        try {
+            let tenant_id=req.user.userid
+            let table_id=req.body.table_id
+
+            await this.services.DeleteTable(tenant_id,table_id)
+            this.utils.SendResponse(200,"success",true,res,{})
+        } catch (error) {
+            
+            this.consolelogger.error("failed to delete table ",{body:
                req.body,
                 error
             })

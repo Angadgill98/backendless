@@ -55,13 +55,14 @@ func (r *Table_row_repo)VerifyTenantTable(table_name string,tenant_id uuid.UUID)
 
 func (r * Table_row_repo)InsertTenantUserRow(ctx *context.Context,table_rows []Table_row)(error,int){
 	query:=fmt.Sprintf(`insert into table_row(
-	table_id, column_name, tenant_user_identifier, data)
+	table_id, tenant_user_identifier, data)
 	VALUES 
 	`)
 	query,args:=r.InsertQueryBuilder(query,table_rows)
 
 	
 	var row_id int
+	
 	rows:=r.Db.QueryRow(*ctx,query,args...)
 	
 	err:=rows.Scan(&row_id)
@@ -83,10 +84,10 @@ func (r *Table_row_repo)InsertQueryBuilder(query string,table_rows []Table_row)(
 	for i, row := range table_rows {
 		placeholders = append(
 			placeholders,
-			fmt.Sprintf("($%v, $%v, $%v, $%v)", i*4+1, i*4+2, i*4+3, i*4+4),
+			fmt.Sprintf("($%v, $%v, $%v)", i*3+1, i*3+2, i*3+3),
 		)
 
-		args = append(args,row.Table_id, row.Column_name, row.Tenant_user_uni_identifier,row.Data)
+		args = append(args,row.Table_id, row.Tenant_user_uni_identifier,row.Data)
 	}
 	query = fmt.Sprintf(
 			"%v %s",
@@ -96,10 +97,13 @@ func (r *Table_row_repo)InsertQueryBuilder(query string,table_rows []Table_row)(
 	query=fmt.Sprintf("%v Returning id",query)
 	return query,args
 }
+
 type  Table_row struct{
 	Table_id uuid.UUID
-	Column_name string
 	Tenant_user_uni_identifier string
+
+	Table_name string
+
 	Data map[string]any  
 }
 
@@ -166,9 +170,9 @@ func (r *Table_row_repo)GetTableSchema(ctx context.Context,table_id  uuid.UUID,u
 	err:=r.Db.QueryRow(ctx,query,table_id,user_id).Scan(&schema)
 	if err!=nil{
 		if err ==sql.ErrNoRows{
-
+			return nil,err
 		}else{
-
+			return nil,err
 		}
 	}
 	return schema,nil
