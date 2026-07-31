@@ -107,15 +107,14 @@ type  Table_row struct{
 	Data map[string]any  
 }
 
-func (r *Table_row_repo)ReadTenantUserRow(table_id uuid.UUID,column_name []string,tenant_user_uni_identifier string)(error,[]*model.TableRow){
+func (r *Table_row_repo)ReadTenantUserRow(table_id uuid.UUID,tenant_user_uni_identifier string)(error,[]*model.TableRow){
 	query:=fmt.Sprintf(`SELECT id, data
 	FROM table_row 
 	WHERE 
 	table_id=$1 and
-	column_name=any($2) and
-	tenant_user_identifier=$3`)
+	tenant_user_identifier=$2`)
 	ctx:=context.Background()
-	rows,err:=r.Db.Query(ctx,query,table_id,column_name,tenant_user_uni_identifier)
+	rows,err:=r.Db.Query(ctx,query,table_id,tenant_user_uni_identifier)
 	if err!=nil{
 
 		return fmt.Errorf("failed to execute thte query; %v",err),nil
@@ -133,22 +132,22 @@ func (r *Table_row_repo)ReadTenantUserRow(table_id uuid.UUID,column_name []strin
 	return nil,data
 }
 
-func (r *Table_row_repo)UpdateTenantUserRow(row_id int,table_id *uuid.UUID,column_name *string,tenant_user_uni_identifier *string,path []*model.Pathidk)(error,*model.TableRow){
+func (r *Table_row_repo)UpdateTenantUserRow(row_id int,table_id *uuid.UUID,tenant_user_uni_identifier *string,path []*model.Pathidk)(error,*model.TableRow){
 	path_query:=r.Util.JsonbPathQueryBuilder(path)
 	base_query:=fmt.Sprintf(`update table_row
 	set data=%v
 	where 
 	id=$1 and
 	table_id=$2 and
-	column_name=$3 and
-	tenant_user_identifier=$4
+	
+	tenant_user_identifier=$3
 	`,path_query)
 	return_query:="RETURNING id, data"
 	base_query=base_query+return_query
 	var ctx=context.Background()
 	var row model.TableRow
 	
-	err:=r.Db.QueryRow(ctx,base_query,row_id,*table_id,*column_name,*tenant_user_uni_identifier).Scan(&row.ID, &row.Data)
+	err:=r.Db.QueryRow(ctx,base_query,row_id,*table_id,*tenant_user_uni_identifier).Scan(&row.ID, &row.Data)
 	if err!=nil{
 		log.Printf("failed to update thte tenant user data %v\n",err)
 		return err,nil

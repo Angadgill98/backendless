@@ -30,7 +30,6 @@ type ReadTenantUserRow struct {
 	TenantUserUUID string    `json:"tenant_user_uuid"`
 	TableID        uuid.UUID `json:"table_Id"`
 	TableName      string    `json:"table_name"`
-	ColumnName     []string  `json:"column_name"`
 }
 
 type Row struct {
@@ -60,7 +59,6 @@ type UpdateTenantUserRow struct {
 	TenantUserUUID string         `json:"tenant_user_uuid"`
 	TableID        uuid.UUID      `json:"table_Id"`
 	TableName      string         `json:"table_name"`
-	ColumnName     string         `json:"column_name"`
 	Data           map[string]any `json:"data,omitempty"`
 	RowID          int32          `json:"row_id"`
 	Path           []*Pathidk     `json:"path"`

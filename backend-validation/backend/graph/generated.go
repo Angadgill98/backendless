@@ -2600,7 +2600,7 @@ func (ec *executionContext) unmarshalInputReadTenantUserRow(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"user_Id", "tenant_user_uuid", "table_Id", "table_name", "column_name"}
+	fieldsInOrder := [...]string{"user_Id", "tenant_user_uuid", "table_Id", "table_name"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2635,13 +2635,6 @@ func (ec *executionContext) unmarshalInputReadTenantUserRow(ctx context.Context,
 				return it, err
 			}
 			it.TableName = data
-		case "column_name":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("column_name"))
-			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ColumnName = data
 		}
 	}
 	return it, nil
@@ -2818,7 +2811,7 @@ func (ec *executionContext) unmarshalInputUpdateTenantUserRow(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"user_Id", "tenant_user_uuid", "table_Id", "table_name", "column_name", "data", "row_id", "path"}
+	fieldsInOrder := [...]string{"user_Id", "tenant_user_uuid", "table_Id", "table_name", "data", "row_id", "path"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2853,13 +2846,6 @@ func (ec *executionContext) unmarshalInputUpdateTenantUserRow(ctx context.Contex
 				return it, err
 			}
 			it.TableName = data
-		case "column_name":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("column_name"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ColumnName = data
 		case "data":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
 			data, err := ec.unmarshalOJSON2map(ctx, v)
@@ -3825,36 +3811,6 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
-	var vSlice []any
-	vSlice = graphql.CoerceList(v)
-	var err error
-	res := make([]string, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	for i := range v {
-		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
-	}
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
 }
 
 func (ec *executionContext) unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx context.Context, v any) (uuid.UUID, error) {

@@ -181,7 +181,7 @@ func (s *Table_service) MatchType(typ string, value any) bool {
 
 
 func (s *Table_service)ReadTenantUserRow(ctx *context.Context,input *model.ReadTenantUserRow)([]*model.TableRow,error){
-	err,rows:=s.Repo.ReadTenantUserRow(input.TableID,input.ColumnName,input.TenantUserUUID)
+	err,rows:=s.Repo.ReadTenantUserRow(input.TableID,input.TenantUserUUID)
 	if err!=nil{
 		return nil,err
 	}
@@ -189,22 +189,22 @@ func (s *Table_service)ReadTenantUserRow(ctx *context.Context,input *model.ReadT
 }
 
 func (s *Table_service)UpdateTenantUserRow(ctx *context.Context,input *model.UpdateTenantUserRow)(*model.TableRow,error){
-	match,err:=s.Redis.IsTableInTenantSet(s.Redis.Redis,input.UserID,input.TableID.String(),*ctx)
-	if err!=nil{
-		log.Printf("error occured while verifying the table belong to tenant in redis %v \n",err)
-		return nil,err
-	}
-	if !match{
-		err,match=s.Repo.VerifyTenantTable(*&input.TableName,input.UserID)
-		if err!=nil{
-			log.Printf("faield to verify the  table o ftenant in db %v \n",err)
-			return nil,err
-		}
-	}
+	// match,err:=s.Redis.IsTableInTenantSet(s.Redis.Redis,input.UserID,input.TableID.String(),*ctx)
+	// if err!=nil{
+	// 	log.Printf("error occured while verifying the table belong to tenant in redis %v \n",err)
+	// 	return nil,err
+	// }
+	// if !match{
+	// 	err,match=s.Repo.VerifyTenantTable(*&input.TableName,input.UserID)
+	// 	if err!=nil{
+	// 		log.Printf("faield to verify the  table o ftenant in db %v \n",err)
+	// 		return nil,err
+	// 	}
+	// }
 
-	s.Redis.GetTableSchema(s.Redis.Redis,input.TableName,input.UserID,*ctx)
+	// s.Redis.GetTableSchema(s.Redis.Redis,input.TableName,input.UserID,*ctx)
 
-	err,row:=s.Repo.UpdateTenantUserRow(int(input.RowID),&input.TableID,&input.ColumnName,&input.TenantUserUUID,input.Path)
+	err,row:=s.Repo.UpdateTenantUserRow(int(input.RowID),&input.TableID,&input.TenantUserUUID,input.Path)
 	if err!=nil{
 		return nil,err
 	}
