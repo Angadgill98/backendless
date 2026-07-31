@@ -28,7 +28,7 @@ const Dashboard = () => {
             <Sidebar tabs={tabs} setActiveTabs={setActiveTabs}  setActiveTab={setActiveTab}/>
           </div>
 
-          <div style={{display:"flex",height:"100%",width:"100%",flexDirection:"column"}}>
+          <div style={{display:"flex",height:"100%",width:"82%",flexDirection:"column"}}>
             <div className="dashboard-table-tab">
               <Tab tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} setActiveTabs={setActiveTabs}/>
             </div>

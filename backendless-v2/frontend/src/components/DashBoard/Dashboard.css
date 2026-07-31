@@ -15,12 +15,12 @@
 
 .dashboard-sidebar{
     height: 100%;
-    width:25%;
+    width:18%;
     background-color: aquamarine;
 }
 
 .dashboard-table-tab{
-    height: 4%;
+    height: 3.25%;
     width: 100%;
 
     background-color: cadetblue;
@@ -28,6 +28,6 @@
 
 .dashboard-table{
     width: 100%;
-    height: 96%;
+    height: 96.75%;
     background-color: bisque;
 }

@@ -1,0 +1,21 @@
+.tab-list{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+#tab-list-item{
+    height: 100%;
+    width: 75px;
+    background-color: aquamarine;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    box-sizing: border-box;
+    gap: 10px;
+}

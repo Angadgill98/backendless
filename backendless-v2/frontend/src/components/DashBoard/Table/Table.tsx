@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import type { tab } from '../Dashboard'
 import Options from './Options'
-
+import "./table.css"
 
 const Table = (props:{activeTab:tab | null}) => {
   let [is_table_data,set_is_data]=useState(false)
@@ -18,6 +18,9 @@ const Table = (props:{activeTab:tab | null}) => {
         if (table_data.length!=0){
           set_is_data(true)
           setdata(table_data)
+        }else{
+          set_is_data(false)
+          setdata([])
         }
 
       }
@@ -31,11 +34,11 @@ const Table = (props:{activeTab:tab | null}) => {
     <>
       {props.activeTab ?<div style={{width:"100%",height:"100%"}}>
       
-        <div style={{width:"100%",height:"4%"}}>
+        <div style={{width:"100%",height:"3.4%"}}>
             <Options activeTab={props.activeTab}/>
         </div>
 
-        <table>
+        <table className='table-table'>
           <thead>
            
               <ShowColumns columns={props.activeTab.columns}/>
@@ -99,10 +102,10 @@ function ShowColumns(props: { columns:object }) {
 
     return (
         <tr>
-          <td>id</td>
-          <td>user identifier</td>
+          <td id='table-cell'>id</td>
+          <td id='table-cell'>user identifier</td>
             {entries.map(([key, value]) => (
-                <td key={key} data-type={value.type}> {key}</td>
+                <td id='table-cell' key={key} data-type={value.type}> {key}</td>
             ))}
         </tr>
     );
@@ -118,10 +121,10 @@ function ShowData(props:{rows:row[]}){
       return(
         <>
         <tr>
-        <td>{value.id}</td>
-        <td>{value.tenant_user_identifier}</td>
+        <td id='table-cell'>{value.id}</td>
+        <td id='table-cell'>{value.tenant_user_identifier}</td>
         {Object.entries(value.data).map(([key, data]) => (
-          <td key={key}>{String(data)}</td>
+          <td id='table-cell' key={key}>{String(data)}</td>
         ))}
         </tr>
         </>

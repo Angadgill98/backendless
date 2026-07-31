@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState, type HTMLInputTypeAttribute } from 'react'
 import type { tab } from '../Dashboard'
 
+import "./Sidebar.css"
+
 const Sidebar = (props:{tabs:tab[],setActiveTabs:React.Dispatch<React.SetStateAction<tab[]>>,setActiveTab:React.Dispatch<React.SetStateAction<tab|null>>}) => {
     let [table_list,set_table_list]=useState<table[]>([])
     useEffect(() => {
@@ -34,27 +36,27 @@ const Sidebar = (props:{tabs:tab[],setActiveTabs:React.Dispatch<React.SetStateAc
     }
   return (
     <>
-        <div>
+        <div className='sidebar-container'>
 
         
-        <div>
-            <input type='text' placeholder='Add a table' ref={table}></input>
-            <button onClick={()=>{add_table()}}>Add</button>
-        </div>
+            <div className='sidebar-table-add'>
+                <input id='sidebar-input' type='text' placeholder='Add a table' ref={table}></input>
+                <button id='sidebar-button' onClick={()=>{add_table()}}>Add</button>
+            </div>
 
 
-        <ul>
-            {table_list.length >0 && table_list.map((value,index)=>{
-                return(
-                   
-                        <li onClick={()=>{OpenTab(value.table_id,value.table_name,props.setActiveTabs,props.tabs,props.setActiveTab,value.columns)}} key={value.table_id} id={value.table_id}>
-                            {value.table_name}
-                            <button onClick={(e)=>{e.stopPropagation();DeleteTable(value,table_list,set_table_list)}}>x</button>
-                        </li>
-                   
-                )
-            })}
-        </ul>
+            <ul className='sidebar-table-list'>
+                {table_list.length >0 && table_list.map((value,index)=>{
+                    return(
+                    
+                            <li className='sidebar-table-item' onClick={()=>{OpenTab(value.table_id,value.table_name,props.setActiveTabs,props.tabs,props.setActiveTab,value.columns)}} key={value.table_id} id={value.table_id}>
+                                {value.table_name}
+                                <button id='delete-table' onClick={(e)=>{e.stopPropagation();DeleteTable(value,table_list,set_table_list)}}>x</button>
+                            </li>
+                    
+                    )
+                })}
+            </ul>
         </div>
     </>
   )

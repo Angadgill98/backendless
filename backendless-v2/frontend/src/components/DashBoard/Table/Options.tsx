@@ -7,7 +7,7 @@ const Options = (props:{activeTab:tab}) => {
 
     return (
     <div className='options-contianer'>
-        <button onClick={()=>{setmodal(prev=>!prev)}}>Create Columns </button>
+        <button id='options-create-column' onClick={()=>{setmodal(prev=>!prev)}}>Create Columns </button>
         {modal && <Modal aciivetab={props.activeTab} setmodal={setmodal} />}
     </div>
   )
