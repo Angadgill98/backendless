@@ -4,7 +4,7 @@ let pass=window.prompt("Enter Password")
 let tenant_id="97a56a18-8585-4efd-9bbf-b78d6dea7ab8"
 let backend_url="http://localhost:8080/query"
 let user_uuid
-let todo_table_id="e68305af-fd43-477f-baa2-2d99cd2c2cc4"
+let todo_table_id="49f61b73-24f9-4d21-be9c-cabe06b8db99"
 let init=async()=>{
     //await Signup()
     
