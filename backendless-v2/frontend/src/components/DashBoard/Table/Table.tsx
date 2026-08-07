@@ -3,11 +3,11 @@ import type { tab } from '../Dashboard'
 import Options from './Options'
 import "./table.css"
 
-const Table = (props:{activeTab:tab | null}) => {
+const Table = (props:{activeTab:tab | null,setactiveTab:React.Dispatch<React.SetStateAction<tab | null>>}) => {
   let [is_table_data,set_is_data]=useState(false)
   let [table_data,setdata]=useState<row[]>([])
-  let [columns,setcolumns]=useState()
-
+  let [columns,setcolumns]=useState(props.activeTab?.columns)
+  
   
 
   useEffect(() => {
@@ -22,7 +22,7 @@ const Table = (props:{activeTab:tab | null}) => {
           set_is_data(false)
           setdata([])
         }
-
+        
       }
 
 
@@ -35,13 +35,13 @@ const Table = (props:{activeTab:tab | null}) => {
       {props.activeTab ?<div style={{width:"100%",height:"100%"}}>
       
         <div style={{width:"100%",height:"3.4%"}}>
-            <Options activeTab={props.activeTab}/>
+            <Options activeTab={props.activeTab} setactiveTab={props.setactiveTab}/>
         </div>
 
         <table className='table-table'>
           <thead>
            
-              <ShowColumns columns={props.activeTab.columns}/>
+              <ShowColumns columns={props.activeTab?.columns}/>
             
           </thead>
 
@@ -102,10 +102,10 @@ function ShowColumns(props: { columns:object }) {
 
     return (
         <tr>
-          <td id='table-cell'>id</td>
-          <td id='table-cell'>user identifier</td>
+          <th className='table-cell'>id</th>
+          <th className='table-cell'>user identifier</th>
             {entries.map(([key, value]) => (
-                <td id='table-cell' key={key} data-type={value.type}> {key}</td>
+                <th className='table-cell' key={key} data-type={value.type}> {key}</th>
             ))}
         </tr>
     );
@@ -121,10 +121,10 @@ function ShowData(props:{rows:row[]}){
       return(
         <>
         <tr>
-        <td id='table-cell'>{value.id}</td>
-        <td id='table-cell'>{value.tenant_user_identifier}</td>
+        <td className='table-cell'>{value.id}</td>
+        <td className='table-cell'>{value.tenant_user_identifier}</td>
         {Object.entries(value.data).map(([key, data]) => (
-          <td id='table-cell' key={key}>{String(data)}</td>
+          <td className='table-cell' key={key}>{String(data)}</td>
         ))}
         </tr>
         </>

@@ -51,7 +51,7 @@ const Sidebar = (props:{tabs:tab[],setActiveTabs:React.Dispatch<React.SetStateAc
                     
                             <li className='sidebar-table-item' onClick={()=>{OpenTab(value.table_id,value.table_name,props.setActiveTabs,props.tabs,props.setActiveTab,value.columns)}} key={value.table_id} id={value.table_id}>
                                 {value.table_name}
-                                <button id='delete-table' onClick={(e)=>{e.stopPropagation();DeleteTable(value,table_list,set_table_list)}}>x</button>
+                                <button id='delete-table' onClick={(e)=>{e.stopPropagation();DeleteTable(value,table_list,set_table_list,props.tabs,props.setActiveTabs,props.setActiveTab)}}>x</button>
                             </li>
                     
                     )
@@ -130,7 +130,10 @@ type table={
     columns:any
 }
 
-async function DeleteTable(table:table,table_list:table[],set_table_list: React.Dispatch<React.SetStateAction<table[]>>){
+async function DeleteTable(table:table,table_list:table[],set_table_list: React.Dispatch<React.SetStateAction<table[]>>,
+    tabs:tab[],setActiveTabs:React.Dispatch<React.SetStateAction<tab[]>>,
+    setActiveTab:React.Dispatch<React.SetStateAction<tab|null>>
+){
     
     try {
         let res=await fetch(`${import.meta.env.VITE_API_URL}/api/delete-table`,{
@@ -149,10 +152,17 @@ async function DeleteTable(table:table,table_list:table[],set_table_list: React.
 
         if (!res.ok){
             console.log("failed to delte the table")
+            console.log(data)
         }else{
             console.log("delted the table")
             set_table_list((prev) =>
                 prev.filter((t) => t.table_id !== table.table_id)
+            );
+            setActiveTabs(prev =>
+                prev.filter(tab => tab.table_id !== table.table_id)
+            );
+            setActiveTab(prev =>
+                prev?.table_id === table.table_id ? null : prev
             );
         }
     } catch (error) {

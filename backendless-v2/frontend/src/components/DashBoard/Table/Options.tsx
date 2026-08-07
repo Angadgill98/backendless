@@ -1,21 +1,21 @@
 import React, { useRef, useState } from 'react'
 import "./options.css"
 import type { tab } from '../Dashboard';
-const Options = (props:{activeTab:tab}) => {
+const Options = (props:{activeTab:tab,setactiveTab:React.Dispatch<React.SetStateAction<tab | null>>}) => {
     let [modal,setmodal]=useState(false);
     
 
     return (
     <div className='options-contianer'>
         <button id='options-create-column' onClick={()=>{setmodal(prev=>!prev)}}>Create Columns </button>
-        {modal && <Modal aciivetab={props.activeTab} setmodal={setmodal} />}
+        {modal && <Modal aciivetab={props.activeTab} setactiveTab={props.setactiveTab} setmodal={setmodal} />}
     </div>
   )
 }
 
 export default Options
 
-function Modal(props:{setmodal:React.Dispatch<React.SetStateAction<boolean>>,aciivetab:tab}){
+function Modal(props:{setmodal:React.Dispatch<React.SetStateAction<boolean>>,aciivetab:tab,setactiveTab:React.Dispatch<React.SetStateAction<tab | null>>}){
     let [isadd,setadd]=useState(false)
     let [type,settype]=useState("int")
     let column_name=useRef<HTMLInputElement>(null);
@@ -24,9 +24,10 @@ function Modal(props:{setmodal:React.Dispatch<React.SetStateAction<boolean>>,aci
         setadd(true)
         if (!column_name.current?.value.trim()) return
 
-        CreateColumn(type,column_name.current?.value,props.aciivetab.table_id,props.aciivetab?.tab_name)
+        CreateColumn(type,column_name.current?.value,props.aciivetab.table_id,props.aciivetab?.tab_name,props.setactiveTab,props.aciivetab)
 
         setadd(false)
+        props.setmodal(false)
     }
 
     return(
@@ -36,7 +37,7 @@ function Modal(props:{setmodal:React.Dispatch<React.SetStateAction<boolean>>,aci
                 <input ref={column_name} type='text' placeholder='Enter the anme fo the columns'></input>
                 
                 <p>Select a type</p>
-                <select value={"int"} onChange={(e)=>{settype(e.target.value)}}>
+                <select value={type} onChange={(e)=>{settype(e.target.value)}}>
                     <option value="int">Integer</option>
                     <option value="string">String</option>
                     <option value="boolean">Boolean</option>
@@ -56,7 +57,9 @@ function Modal(props:{setmodal:React.Dispatch<React.SetStateAction<boolean>>,aci
 }
 
 
-async function CreateColumn(type:string,column_name:string,table_id:string,table_name:string){
+async function CreateColumn(type:string,column_name:string,table_id:string,table_name:string,setactiveTab:React.Dispatch<React.SetStateAction<tab | null>>,
+    activeTab:tab
+){
     try {
         let res=await fetch(`${import.meta.env.VITE_API_URL}/api/create-columns`,{
             method:"POST",
@@ -81,9 +84,23 @@ async function CreateColumn(type:string,column_name:string,table_id:string,table
         if (!res.ok){
             console.log("failed to create the column")
             console.log(data)
+            
         }else{
             console.log("created the column")
             console.log(data)
+            setactiveTab(prev => {
+                if (!prev) return prev;
+
+                return {
+                    ...prev,
+                    columns: {
+                        ...prev.columns,
+                        [column_name]: {
+                            type: type
+                        }
+                    }
+                };
+            });
         }
 
     } catch (error) {

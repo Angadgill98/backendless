@@ -132,8 +132,8 @@ export class Tablehandler {
         try {
             let tenant_id=req.user.userid
             let table_id=req.body.table_id
-
-            await this.services.DeleteTable(tenant_id,table_id)
+            let table_name=req.body.table_name
+            await this.services.DeleteTable(tenant_id,table_id,table_name)
             this.utils.SendResponse(200,"success",true,res,{})
         } catch (error) {
             

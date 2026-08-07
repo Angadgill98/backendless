@@ -210,7 +210,14 @@ func (s *Table_service)UpdateTenantUserRow(ctx *context.Context,input *model.Upd
 	}
 	return row,nil
 }
-
+func (s *Table_service)DeleteTenantUserRow(ctx context.Context,input model.DeleteTenantUserRow)(error){
+	err:=s.Repo.DeleteUserRowid(ctx,input.TenantID,input.TenantUserUUID,input.Data)
+	if err!=nil{
+		log.Println("faield tp delte a row %v",err)
+		return err
+	}
+	return nil
+}
 func (s *Table_service)FlattenSchema(schema map[string]any, prefix string, flatten map[string]string) map[string]string {
     for key, value := range schema {
 

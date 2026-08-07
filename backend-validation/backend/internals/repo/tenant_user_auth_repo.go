@@ -65,7 +65,7 @@ func (s *Tenant_user_auth_repo) Signup(ctx context.Context,username string,mail,
 
 }
 
-func(s *Tenant_user_auth_repo) Signin(ctx context.Context,username string,mail,pass string)(error,uuid.UUID,string){
+func(s *Tenant_user_auth_repo) Signin(ctx context.Context,username string,mail string ,pass string)(error,uuid.UUID,string){
 	query:=fmt.Sprintf("Select email,password_hash,tenant_user_uuid from tenant_user_auth where username=$1 and email=$2")
 	var isemail,ispass string
 	var uid uuid.UUID

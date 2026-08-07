@@ -156,8 +156,59 @@ func (r *Table_row_repo)UpdateTenantUserRow(row_id int,table_id *uuid.UUID,tenan
 	return nil,&row
 }
 
+func (r * Table_row_repo)DeleteUserRowid(ctx context.Context,tenanat_id uuid.UUID,tenant_user_uni_identifier uuid.UUID,data []*model.DeleteRow)error{
+	query, args := DeleteQueryBuilder(
+        tenanat_id,
+        tenant_user_uni_identifier,
+        data,
+    )
 
+	_, err := r.Db.Exec(ctx, query, args...)
 
+    return err
+}
+func DeleteQueryBuilder(tenantID uuid.UUID,tenantUserUUID uuid.UUID,data []*model.DeleteRow,) (string, []interface{}) {
+
+   
+    query := `
+        DELETE FROM table_row
+        WHERE tenant_user_identifier = $1
+          AND (table_id, id) IN (
+    `
+
+    args := []interface{}{
+        tenantUserUUID,
+    }
+
+    placeholders := make([]string, 0, len(data))
+
+    argIndex := 2
+
+    for _, row := range data {
+
+        placeholders = append(
+            placeholders,
+            fmt.Sprintf(
+                "($%d, $%d)",
+                argIndex,
+                argIndex+1,
+            ),
+        )
+
+        args = append(
+            args,
+            row.TableID,
+            row.RowID,
+        )
+
+        argIndex += 2
+    }
+
+    query += strings.Join(placeholders, ",")
+    query += ")"
+
+    return query, args
+}
 
 
 func (r *Table_row_repo)GetTableSchema(ctx context.Context,table_id  uuid.UUID,user_id uuid.UUID)(map[string]any,error){

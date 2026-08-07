@@ -34,7 +34,7 @@ const Dashboard = () => {
             </div>
 
             <div className="dashboard-table">
-              <Table activeTab={activeTab}/>
+              <Table activeTab={activeTab} setactiveTab={setActiveTab}/>
             </div>
           </div>
         </div>

@@ -1,0 +1,76 @@
+# Backendless-v2 Frontend State Issue
+
+The frontend currently has two separate states that contain information about the same tables:
+
+* **Sidebar `table_list` state** — contains the tables shown in the sidebar.
+* **`tabs` / `activeTab` state** — contains the tables that are currently opened.
+
+Because these are separate states, they can become inconsistent.
+
+## The problem
+
+Suppose the sidebar initially has:
+
+```text
+table_list
+└── Todo
+    ├── id
+    ├── todo_name
+    └── completed
+```
+
+I open the `Todo` table.
+
+The tab receives its own copy of the table data:
+
+```text
+table_list
+└── Todo
+    ├── id
+    ├── todo_name
+    └── completed
+
+tabs
+└── Todo
+    ├── id
+    ├── todo_name
+    └── completed
+```
+
+Now, while the tab is open, I add a new column:
+
+```text
+Todo
+├── id
+├── todo_name
+├── completed
+└── priority
+```
+
+The **tab state gets updated**, so the currently opened table correctly shows `priority`.
+
+However, the sidebar's `table_list` was not updated.
+
+Therefore, the states become:
+
+```text
+table_list
+└── Todo
+    ├── id
+    ├── todo_name
+    └── completed
+
+tabs
+└── Todo
+    ├── id
+    ├── todo_name
+    ├── completed
+    └── priority
+```
+
+Now if I close the tab and open `Todo` again **from the sidebar**, the sidebar still contains the old copy, so `priority` is missing.
+
+If I open/use the already existing tab, `priority` is present because that state was updated.
+
+---
+

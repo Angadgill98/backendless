@@ -122,10 +122,12 @@ export class TableServices {
         }
     }
 
-    async DeleteTable(tenant_id:UUID,table_id:UUID){
+    async DeleteTable(tenant_id:UUID,table_id:UUID,table_name:string){
         try {
+            await this.table_repo.DeleteTableRows(table_id)   
             await this.table_repo.DeleteTable(tenant_id,table_id)
-            await this.table_repo.DeleteTableRows(table_id)    
+            await this.redis.DeleteFlattenSchema(tenant_id,table_name)
+             
         } catch (error) {
             throw error    
         }

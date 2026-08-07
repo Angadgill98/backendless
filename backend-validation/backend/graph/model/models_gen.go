@@ -8,6 +8,18 @@ import (
 	"github.com/google/uuid"
 )
 
+type DeleteRow struct {
+	RowID     *int32     `json:"row_id,omitempty"`
+	TableID   *uuid.UUID `json:"table_Id,omitempty"`
+	TableName *string    `json:"table_name,omitempty"`
+}
+
+type DeleteTenantUserRow struct {
+	TenantID       uuid.UUID    `json:"tenant_id"`
+	TenantUserUUID uuid.UUID    `json:"tenant_user_uuid"`
+	Data           []*DeleteRow `json:"data"`
+}
+
 type InsertTenantUserRow struct {
 	UserID         uuid.UUID `json:"user_Id"`
 	TenantUserUUID string    `json:"tenant_user_uuid"`

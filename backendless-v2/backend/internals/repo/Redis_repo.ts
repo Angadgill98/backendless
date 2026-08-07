@@ -75,6 +75,22 @@ export class Redis_repo{
     }
 
 
+    async DeleteFlattenSchema(tenant_id: UUID,table_name: string): Promise<number> {
+        try {
+            const key = `schema:tenant_id:${tenant_id}:table_name:${table_name}`;
+
+            return await this.rdb.del(key);
+
+        } catch (error) {
+            this.consoleLogger.error(
+                "failed to delete schema from redis",
+                { tenant_id, table_name, error }
+            );
+
+            throw error;
+        }
+    }
+
     async IsExist(tenant_id:UUID,table_name:string):Promise<number>{
         const key = `schema:tenant_id:${tenant_id}:table_name:${table_name}`;
         return await this.rdb.exists(key);

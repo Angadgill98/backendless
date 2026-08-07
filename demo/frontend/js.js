@@ -4,6 +4,7 @@ let pass=window.prompt("Enter Password")
 let tenant_id="97a56a18-8585-4efd-9bbf-b78d6dea7ab8"
 let backend_url="http://localhost:8080/query"
 let user_uuid
+let todo_table_id="e68305af-fd43-477f-baa2-2d99cd2c2cc4"
 let init=async()=>{
     //await Signup()
     
@@ -98,11 +99,11 @@ async function Signin(){
     }
 }
 
-function Addtodo(){
+async function Addtodo(){
     let input=document.getElementById("input")
     let todo_name=input.value
     
-    let id=SaveTodo(todo_name)
+    let id=await SaveTodo(todo_name)
 
     AppendToList(todo_name,id)
 }
@@ -126,16 +127,60 @@ function AppendToList(todo_name,id){
 function AddDeleteButton(li_item,id){
     let delete_button=document.createElement("button")
     delete_button.innerText="X"
-    delete_button.addEventListener("click",(e)=>{
-        DeleteTodo(id)
+    delete_button.addEventListener("click",async(e)=>{
+        await DeleteTodo(id)
         li_item.remove();
     })
 
     li_item.appendChild(delete_button)
 }
 
-function DeleteTodo(row_id){
+async function DeleteTodo(rows_id) {
+    let rows={
+        row_id: rows_id,
+        table_Id: todo_table_id,
+        table_name: "todo"
+    }
+    const query = `
+        mutation DeleteTenantUserRow($input: DeleteTenantUserRow!) {
+            DeleteTenantUserRow(input: $input)
+        }
+    `;
 
+    const variables = {
+        input: {
+            tenant_id: tenant_id,
+            tenant_user_uuid: user_uuid,
+
+            data: rows
+        }
+    };
+
+    try {
+        const res = await fetch(backend_url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                query: query,
+                variables: variables
+            })
+        });
+
+        const result = await res.json();
+
+        if (!res.ok) {
+            console.log("Failed to delete");
+            console.log(result);
+            return;
+        }
+
+        console.log("Delete result:", result);
+
+    } catch (error) {
+        console.log("Error while deleting:", error);
+    }
 }
 
 function AddUpdateButton(item, id) {
@@ -161,7 +206,7 @@ function AddUpdateButton(item, id) {
         cancelButton.innerText = "Cancel";
 
         // Update
-        updateButton.addEventListener("click", () => {
+        updateButton.addEventListener("click", async () => {
             let newValue = input.value;
 
             if (newValue.trim() === "") {
@@ -173,7 +218,7 @@ function AddUpdateButton(item, id) {
             modal.remove();
 
             
-            UpdateTodo(id, newValue);
+            await UpdateTodo(id, newValue);
 
             item.querySelector("span").innerText = newValue;
         });
@@ -194,8 +239,59 @@ function AddUpdateButton(item, id) {
     item.appendChild(button);
 }
 
-function UpdateTodo(row_id,todo_name){
+async function UpdateTodo(row_id, newValue) {
+    const query = `
+        mutation UpdateTenantUserRow($input: UpdateTenantUserRow!) {
+            UpdateTenantUserRow(input: $input) {
+                id
+                data
+            }
+        }
+    `;
 
+    const variables = {
+        input: {
+            user_Id: tenant_id,
+            tenant_user_uuid: user_uuid,
+            table_Id: todo_table_id,
+            table_name: "todo",
+
+            row_id: row_id,
+
+            path: [
+                {
+                    Path: ["todo_name"],
+                    Value: newValue
+                }
+            ]
+        }
+    };
+
+    try {
+        const res = await fetch(backend_url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                query: query,
+                variables: variables
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.log("Failed to update todo");
+            console.log(data);
+            return;
+        }
+
+        console.log("Todo updated:", data);
+
+    } catch (error) {
+        console.log("Error while updating todo:", error);
+    }
 }
 
 async function SaveTodo(todo_name){
@@ -211,7 +307,7 @@ async function SaveTodo(todo_name){
             tenant_user_uuid: user_uuid,
             rows: [
                 {
-                    table_Id: "e33b1752-6337-4f40-81da-6e719f02ba3c",
+                    table_Id: todo_table_id,
                     table_name: "todo",
                     data: {
                         "todo_name": todo_name,
@@ -267,7 +363,7 @@ async function GetTodo() {
         input: {
             user_Id: tenant_id,
             tenant_user_uuid: user_uuid,
-            table_Id: "e33b1752-6337-4f40-81da-6e719f02ba3c",
+            table_Id: todo_table_id,
             table_name: "todo",
         }
     };

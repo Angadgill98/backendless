@@ -65,7 +65,7 @@ type Mutation{
   UpdateTenantUserRow(input: UpdateTenantUserRow!): table_row!
 
   #delete left 
-
+  DeleteTenantUserRow(input:DeleteTenantUserRow!):Boolean!
 
   Signin(input:Signin!):signin_data!
 
@@ -160,4 +160,18 @@ input Signin{
   pass:String
 }
 
+
+
+input DeleteTenantUserRow{
+  tenant_id:UUID!
+  tenant_user_uuid:UUID!
+
+  data:[DeleteRow!]!
+}
+
+input DeleteRow{
+  row_id:Int
+  table_Id:UUID
+  table_name:String
+}
 

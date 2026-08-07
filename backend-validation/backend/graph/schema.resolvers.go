@@ -7,7 +7,7 @@ package graph
 
 import (
 	"context"
-
+	
 	"log"
 	"math"
 	"validation/graph/model"
@@ -62,21 +62,32 @@ func (r *mutationResolver) UpdateTenantUserRow(ctx context.Context, input model.
 	return row, nil
 }
 
+// DeleteTenantUserRow is the resolver for the DeleteTenantUserRow field.
+func (r *mutationResolver) DeleteTenantUserRow(ctx context.Context, input model.DeleteTenantUserRow) (bool, error) {
+	log.Println("rreq cacmee")
+	err:=r.TableRow.DeleteTenantUserRow(ctx,input)
+	if err!=nil{
+		return false,err
+	}
+	return true,nil
+	
+}
+
 // Signin is the resolver for the Signin field.
 func (r *mutationResolver) Signin(ctx context.Context, input model.Signin) (*model.SigninData, error) {
 	log.Println("rreq cacmee")
-	err,uuid:=r.Auth.Signin(ctx, *input.Username, *input.Pass, *input.Pass, *input.TenantID)
-	if err!=nil{
-		return nil,err
+	err, uuid := r.Auth.Signin(ctx, *input.Username, *input.Pass, *input.Mail, *input.TenantID)
+	if err != nil {
+		return nil, err
 	}
 	uuidString := uuid.String()
-    ok := true
+	ok := true
 
-    obj := model.SigninData{
-        UUID: &uuidString,
-        Ok:   &ok,
-    }
-	return &obj,nil
+	obj := model.SigninData{
+		UUID: &uuidString,
+		Ok:   &ok,
+	}
+	return &obj, nil
 }
 
 // Signup is the resolver for the Signup field.

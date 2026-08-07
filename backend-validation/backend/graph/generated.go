@@ -39,6 +39,7 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
+		DeleteTenantUserRow func(childComplexity int, input model.DeleteTenantUserRow) int
 		InsertTenantUserRow func(childComplexity int, input model.InsertTenantUserRow) int
 		ReadTenantUserRow   func(childComplexity int, input model.ReadTenantUserRow) int
 		Signin              func(childComplexity int, input model.Signin) int
@@ -90,6 +91,7 @@ type MutationResolver interface {
 	InsertTenantUserRow(ctx context.Context, input model.InsertTenantUserRow) (int32, error)
 	ReadTenantUserRow(ctx context.Context, input model.ReadTenantUserRow) ([]*model.TableRow, error)
 	UpdateTenantUserRow(ctx context.Context, input model.UpdateTenantUserRow) (*model.TableRow, error)
+	DeleteTenantUserRow(ctx context.Context, input model.DeleteTenantUserRow) (bool, error)
 	Signin(ctx context.Context, input model.Signin) (*model.SigninData, error)
 	Signup(ctx context.Context, input model.Signup) (bool, error)
 }
@@ -112,6 +114,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	_ = ec
 	switch typeName + "." + field {
 
+	case "Mutation.DeleteTenantUserRow":
+		if e.ComplexityRoot.Mutation.DeleteTenantUserRow == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_DeleteTenantUserRow_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.DeleteTenantUserRow(childComplexity, args["input"].(model.DeleteTenantUserRow)), true
 	case "Mutation.InsertTenantUserRow":
 		if e.ComplexityRoot.Mutation.InsertTenantUserRow == nil {
 			break
@@ -299,6 +312,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := newExecutionContext(opCtx, e, make(chan graphql.DeferredResult))
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputDeleteRow,
+		ec.unmarshalInputDeleteTenantUserRow,
 		ec.unmarshalInputInsertTenantUserRow,
 		ec.unmarshalInputPathidk,
 		ec.unmarshalInputReadTenantUserRow,
@@ -536,6 +551,20 @@ func (ec *executionContext) childFields_table_row(ctx context.Context, field gra
 // endregion ************************** internal!.gotpl ***************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_DeleteTenantUserRow_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input",
+		func(ctx context.Context, v any) (model.DeleteTenantUserRow, error) {
+			return ec.unmarshalNDeleteTenantUserRow2validationᚋgraphᚋmodelᚐDeleteTenantUserRow(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_InsertTenantUserRow_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
@@ -865,6 +894,50 @@ func (ec *executionContext) fieldContext_Mutation_UpdateTenantUserRow(ctx contex
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_UpdateTenantUserRow_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_DeleteTenantUserRow(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Mutation_DeleteTenantUserRow(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().DeleteTenantUserRow(ctx, fc.Args["input"].(model.DeleteTenantUserRow))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
+			return ec.marshalNBoolean2bool(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Mutation_DeleteTenantUserRow(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_DeleteTenantUserRow_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2508,6 +2581,94 @@ func (ec *executionContext) fieldContext_users_tables_table_name(_ context.Conte
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputDeleteRow(ctx context.Context, obj any) (model.DeleteRow, error) {
+	var it model.DeleteRow
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"row_id", "table_Id", "table_name"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "row_id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("row_id"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RowID = data
+		case "table_Id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("table_Id"))
+			data, err := ec.unmarshalOUUID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TableID = data
+		case "table_name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("table_name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TableName = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDeleteTenantUserRow(ctx context.Context, obj any) (model.DeleteTenantUserRow, error) {
+	var it model.DeleteTenantUserRow
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"tenant_id", "tenant_user_uuid", "data"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "tenant_id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenant_id"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TenantID = data
+		case "tenant_user_uuid":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenant_user_uuid"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TenantUserUUID = data
+		case "data":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
+			data, err := ec.unmarshalNDeleteRow2ᚕᚖvalidationᚋgraphᚋmodelᚐDeleteRowᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Data = data
+		}
+	}
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputInsertTenantUserRow(ctx context.Context, obj any) (model.InsertTenantUserRow, error) {
 	var it model.InsertTenantUserRow
 	if obj == nil {
@@ -2961,6 +3122,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "UpdateTenantUserRow":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_UpdateTenantUserRow(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "DeleteTenantUserRow":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_DeleteTenantUserRow(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -3685,6 +3853,31 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNDeleteRow2ᚕᚖvalidationᚋgraphᚋmodelᚐDeleteRowᚄ(ctx context.Context, v any) ([]*model.DeleteRow, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.DeleteRow, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNDeleteRow2ᚖvalidationᚋgraphᚋmodelᚐDeleteRow(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNDeleteRow2ᚖvalidationᚋgraphᚋmodelᚐDeleteRow(ctx context.Context, v any) (*model.DeleteRow, error) {
+	res, err := ec.unmarshalInputDeleteRow(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNDeleteTenantUserRow2validationᚋgraphᚋmodelᚐDeleteTenantUserRow(ctx context.Context, v any) (model.DeleteTenantUserRow, error) {
+	res, err := ec.unmarshalInputDeleteTenantUserRow(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNInsertTenantUserRow2validationᚋgraphᚋmodelᚐInsertTenantUserRow(ctx context.Context, v any) (model.InsertTenantUserRow, error) {
 	res, err := ec.unmarshalInputInsertTenantUserRow(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4055,6 +4248,24 @@ func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.Se
 	_ = sel
 	_ = ctx
 	res := graphql.MarshalID(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint32(ctx context.Context, v any) (*int32, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt32(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint32(ctx context.Context, sel ast.SelectionSet, v *int32) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	_ = sel
+	_ = ctx
+	res := graphql.MarshalInt32(*v)
 	return res
 }
 
