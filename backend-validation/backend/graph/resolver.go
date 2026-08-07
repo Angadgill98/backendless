@@ -16,4 +16,5 @@ type Resolver struct{
 	Db *pgxpool.Pool
 	Redis *redis.Rdb
 	TableRow *services.Table_service
+	Auth *services.Tenant_user_auth
 }

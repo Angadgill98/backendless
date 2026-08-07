@@ -67,7 +67,7 @@ type Mutation{
   #delete left 
 
 
-  Signin(input:Signin!):token!
+  Signin(input:Signin!):signin_data!
 
   Signup(input:Signup!):Boolean!
 }
@@ -78,9 +78,9 @@ type users_tables{
   table_name:String
   # columns:
 }
-type token{
-  access_token:String
-  refresh_token:String
+type signin_data{
+  UUID:String
+  ok:Boolean
 }
 
 input Row{
@@ -140,9 +140,10 @@ input Pathidk {
 
 
 input Signup{
-  table_name:String
-  table_id:String
+  # table_name:String
+  # table_id:String
   
+  tenant_id:UUID
   username:String
   mail:String
   pass:String
@@ -150,9 +151,10 @@ input Signup{
 
 
 input Signin{
-  table_name:String
-  table_id:String
+  # table_name:String
+  # table_id:String
   
+  tenant_id:UUID
   username:String
   mail:String
   pass:String

@@ -7,7 +7,7 @@ package graph
 
 import (
 	"context"
-	"fmt"
+
 	"log"
 	"math"
 	"validation/graph/model"
@@ -63,15 +63,29 @@ func (r *mutationResolver) UpdateTenantUserRow(ctx context.Context, input model.
 }
 
 // Signin is the resolver for the Signin field.
-func (r *mutationResolver) Signin(ctx context.Context, input model.Signin) (*model.Token, error) {
+func (r *mutationResolver) Signin(ctx context.Context, input model.Signin) (*model.SigninData, error) {
 	log.Println("rreq cacmee")
-	panic(fmt.Errorf("not implemented: Signin - Signin"))
+	err,uuid:=r.Auth.Signin(ctx, *input.Username, *input.Pass, *input.Pass, *input.TenantID)
+	if err!=nil{
+		return nil,err
+	}
+	uuidString := uuid.String()
+    ok := true
+
+    obj := model.SigninData{
+        UUID: &uuidString,
+        Ok:   &ok,
+    }
+	return &obj,nil
 }
 
 // Signup is the resolver for the Signup field.
 func (r *mutationResolver) Signup(ctx context.Context, input model.Signup) (bool, error) {
 	log.Println("rreq cacmee")
-	panic(fmt.Errorf("not implemented: Signup - Signup"))
+
+	err, ok := r.Auth.Signup(ctx, *input.Username, *input.Pass, *input.Mail, *input.TenantID)
+
+	return ok, err
 }
 
 // Mutation returns MutationResolver implementation.

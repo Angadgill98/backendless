@@ -39,19 +39,17 @@ type Row struct {
 }
 
 type Signin struct {
-	TableName *string `json:"table_name,omitempty"`
-	TableID   *string `json:"table_id,omitempty"`
-	Username  *string `json:"username,omitempty"`
-	Mail      *string `json:"mail,omitempty"`
-	Pass      *string `json:"pass,omitempty"`
+	TenantID *uuid.UUID `json:"tenant_id,omitempty"`
+	Username *string    `json:"username,omitempty"`
+	Mail     *string    `json:"mail,omitempty"`
+	Pass     *string    `json:"pass,omitempty"`
 }
 
 type Signup struct {
-	TableName *string `json:"table_name,omitempty"`
-	TableID   *string `json:"table_id,omitempty"`
-	Username  *string `json:"username,omitempty"`
-	Mail      *string `json:"mail,omitempty"`
-	Pass      *string `json:"pass,omitempty"`
+	TenantID *uuid.UUID `json:"tenant_id,omitempty"`
+	Username *string    `json:"username,omitempty"`
+	Mail     *string    `json:"mail,omitempty"`
+	Pass     *string    `json:"pass,omitempty"`
 }
 
 type UpdateTenantUserRow struct {
@@ -85,14 +83,14 @@ type VerifyTenantTable struct {
 	ColumnName *string    `json:"column_name,omitempty"`
 }
 
+type SigninData struct {
+	UUID *string `json:"UUID,omitempty"`
+	Ok   *bool   `json:"ok,omitempty"`
+}
+
 type TableRow struct {
 	ID   *string        `json:"id,omitempty"`
 	Data map[string]any `json:"data,omitempty"`
-}
-
-type Token struct {
-	AccessToken  *string `json:"access_token,omitempty"`
-	RefreshToken *string `json:"refresh_token,omitempty"`
 }
 
 type UsersTables struct {
