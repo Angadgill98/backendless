@@ -1,13 +1,23 @@
-
-.navbar-container{
-    padding: 5px;
+.navbar-container {
+    display: flex;
+    align-items: center;
     height: 100%;
     width: 100%;
-
-    box-sizing: border-box;
+    padding: 0 28px;
+    background: #203b35;
+    box-shadow: 0 2px 12px rgba(26, 54, 46, 0.12);
 }
-.navabr-website-name{
-    margin: 0px;
-    display: inline;
-     
+
+.navabr-website-name {
+    margin: 0;
+    color: #f5faf7;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+@media (max-width: 720px) {
+    .navbar-container { padding: 0 18px; }
+    .navabr-website-name { font-size: 20px; }
 }

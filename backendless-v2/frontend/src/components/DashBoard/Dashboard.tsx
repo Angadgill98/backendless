@@ -16,19 +16,12 @@ const Dashboard = () => {
           <Navbar />
         </div>
 
-        <div
-          style={{
-            height: "100%",
-            display: "flex",
-            flexDirection: "row",
-            backgroundColor: "red",
-          }}
-        >
+        <div className="dashboard-workspace">
           <div className="dashboard-sidebar">
             <Sidebar tabs={tabs} setActiveTabs={setActiveTabs}  setActiveTab={setActiveTab}/>
           </div>
 
-          <div style={{display:"flex",height:"100%",width:"82%",flexDirection:"column"}}>
+          <div className="dashboard-main">
             <div className="dashboard-table-tab">
               <Tab tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} setActiveTabs={setActiveTabs}/>
             </div>

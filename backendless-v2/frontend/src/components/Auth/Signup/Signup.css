@@ -1,21 +1,68 @@
-.sign-up-container{
-    overflow: hidden;
-    box-sizing: border-box;
-
-    background-color: blueviolet;
-
+.sign-up-container {
     display: flex;
-    height:100%;
-    
-
     flex-direction: column;
-    align-items: center;
-
-    gap: 20px;
-
-    padding-top: 100px;
+    align-items: stretch;
+    gap: 22px;
+    min-height: 390px;
+    padding: 42px 44px 38px;
+    color: #23342e;
+    background: #fbfcf8;
 }
-.sign-up-heading{
-    color: aliceblue;
+
+.sign-up-heading {
     margin: 0;
+    color: #203b35;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.sign-up-container > div {
+    display: flex;
+    flex-direction: column;
+    gap: 12px !important;
+}
+
+.sign-up-container input {
+    width: 100%;
+    height: 46px;
+    padding: 0 13px;
+    color: #273831;
+    background: #fff;
+    border: 1px solid #d9e2da;
+    border-radius: 5px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.sign-up-container input::placeholder {
+    color: #87948b;
+}
+
+.sign-up-container input:focus {
+    border-color: #32866b;
+    box-shadow: 0 0 0 3px rgba(50, 134, 107, 0.13);
+}
+
+.sign-up-container > button {
+    min-height: 46px;
+    margin-top: auto;
+    color: #fff;
+    background: #28765f;
+    border: 1px solid #28765f;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 650;
+    transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+
+.sign-up-container > button:hover {
+    background: #1e624e;
+    box-shadow: 0 5px 12px rgba(40, 118, 95, 0.18);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+    .sign-up-container { min-height: 370px; padding: 34px 24px 28px; }
 }
