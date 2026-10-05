@@ -17,34 +17,41 @@
     min-width: 0;
     flex: 1;
     padding: 0 11px;
-    color: #25332e;
-    background: #fbfdfb;
-    border: 1px solid #d5e0d9;
-    border-radius: 5px;
+    color: #25304a;
+    background: #fff;
+    border: 1px solid #dce2ef;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(34, 47, 82, 0.035);
     outline: none;
-    transition: border-color 160ms ease, box-shadow 160ms ease;
+    transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
 }
 
+#sidebar-input::placeholder { color: #929bb0; }
+
 #sidebar-input:focus {
-    border-color: #398c73;
-    box-shadow: 0 0 0 3px rgba(57, 140, 115, 0.12);
+    border-color: #6876e5;
+    box-shadow: 0 0 0 3px rgba(104, 118, 229, 0.14);
 }
 
 #sidebar-button {
     flex: 0 0 48px;
     color: #fff;
-    background: #28765f;
-    border: 1px solid #28765f;
-    border-radius: 5px;
+    background: linear-gradient(135deg, #5968d4, #4655be);
+    border: 1px solid #5362cb;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(74, 88, 198, 0.2);
     font-size: 13px;
-    font-weight: 600;
-    transition: background 160ms ease, transform 160ms ease;
+    font-weight: 650;
+    transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
 #sidebar-button:hover {
-    background: #1e624e;
+    background: linear-gradient(135deg, #4b5ac7, #3949ae);
+    box-shadow: 0 6px 13px rgba(74, 88, 198, 0.28);
     transform: translateY(-1px);
 }
+
+#sidebar-button:active { transform: translateY(0) scale(0.97); }
 
 .sidebar-table-list {
     flex: 1;
@@ -54,6 +61,8 @@
     padding: 18px 0 0;
     overflow-y: auto;
     list-style: none;
+    scrollbar-color: #c8cee0 transparent;
+    scrollbar-width: thin;
 }
 
 .sidebar-table-item {
@@ -64,36 +73,45 @@
     margin: 3px 0;
     padding: 0 9px 0 12px;
     overflow: hidden;
-    color: #3c5048;
+    color: #495570;
     border: 1px solid transparent;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 13px;
     cursor: pointer;
-    transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+    transition: color 170ms ease, background 170ms ease, border-color 170ms ease, box-shadow 170ms ease, transform 170ms ease;
 }
 
 .sidebar-table-item:hover {
-    color: #1d5e4b;
-    background: rgba(255, 255, 255, 0.7);
-    border-color: #dce7df;
+    color: #3949a6;
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #e3e7f2;
+    box-shadow: 0 3px 9px rgba(39, 51, 94, 0.06);
+    transform: translateX(2px);
 }
+
+.sidebar-table-item:active { transform: translateX(1px) scale(0.99); }
 
 #delete-table {
     flex: 0 0 26px;
     height: 26px;
-    color: #83948b;
+    color: #9aa3b7;
     background: transparent;
     border: 0;
-    border-radius: 4px;
-    opacity: 0.65;
-    transition: color 150ms ease, background 150ms ease, opacity 150ms ease;
+    border-radius: 6px;
+    opacity: 0.7;
+    transition: color 150ms ease, background 150ms ease, opacity 150ms ease, transform 150ms ease;
 }
 
-.sidebar-table-item:hover #delete-table {
-    opacity: 1;
-}
+.sidebar-table-item:hover #delete-table { opacity: 1; }
 
 #delete-table:hover {
-    color: #a53c37;
-    background: #f8e9e7;
+    color: #bd4155;
+    background: #fff0f2;
+    transform: scale(1.06);
+}
+
+@media (max-width: 420px) {
+    .sidebar-container { padding: 14px 9px; }
+    .sidebar-table-item { padding-left: 8px; font-size: 12px; }
+    #sidebar-button { flex-basis: 40px; }
 }

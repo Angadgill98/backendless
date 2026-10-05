@@ -5,16 +5,17 @@
     gap: 22px;
     min-height: 390px;
     padding: 42px 44px 38px;
-    color: #23342e;
-    background: #fbfcf8;
+    color: #26314b;
+    background: #fff;
 }
 
 .sign-up-heading {
     margin: 0;
-    color: #203b35;
+    color: #26345f;
     font-family: Georgia, "Times New Roman", serif;
     font-size: 30px;
     font-weight: 500;
+    letter-spacing: -0.02em;
 }
 
 .sign-up-container > div {
@@ -27,41 +28,43 @@
     width: 100%;
     height: 46px;
     padding: 0 13px;
-    color: #273831;
-    background: #fff;
-    border: 1px solid #d9e2da;
-    border-radius: 5px;
+    color: #29334b;
+    background: #fbfcff;
+    border: 1px solid #dce2ee;
+    border-radius: 8px;
     outline: none;
     font-size: 14px;
-    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    transition: border-color 170ms ease, box-shadow 170ms ease, background 170ms ease;
 }
 
-.sign-up-container input::placeholder {
-    color: #87948b;
-}
+.sign-up-container input::placeholder { color: #929bb0; }
 
 .sign-up-container input:focus {
-    border-color: #32866b;
-    box-shadow: 0 0 0 3px rgba(50, 134, 107, 0.13);
+    background: #fff;
+    border-color: #6876e5;
+    box-shadow: 0 0 0 3px rgba(104, 118, 229, 0.13);
 }
 
 .sign-up-container > button {
     min-height: 46px;
     margin-top: auto;
     color: #fff;
-    background: #28765f;
-    border: 1px solid #28765f;
-    border-radius: 5px;
+    background: linear-gradient(135deg, #5968d4, #4655be);
+    border: 1px solid #5362cb;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(74, 88, 198, 0.21);
     font-size: 14px;
     font-weight: 650;
-    transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+    transition: background 170ms ease, transform 170ms ease, box-shadow 170ms ease;
 }
 
 .sign-up-container > button:hover {
-    background: #1e624e;
-    box-shadow: 0 5px 12px rgba(40, 118, 95, 0.18);
+    background: linear-gradient(135deg, #4b5ac7, #3949ae);
+    box-shadow: 0 7px 16px rgba(74, 88, 198, 0.29);
     transform: translateY(-1px);
 }
+
+.sign-up-container > button:active { transform: translateY(0) scale(0.99); }
 
 @media (max-width: 480px) {
     .sign-up-container { min-height: 370px; padding: 34px 24px 28px; }

@@ -4,17 +4,18 @@
     height: 100%;
     width: 100%;
     padding: 0 28px;
-    background: #203b35;
-    box-shadow: 0 2px 12px rgba(26, 54, 46, 0.12);
+    background: linear-gradient(112deg, #202b55 0%, #303f81 54%, #4857b6 100%);
+    box-shadow: 0 5px 18px rgba(32, 43, 85, 0.2);
 }
 
 .navabr-website-name {
     margin: 0;
-    color: #f5faf7;
+    color: #fff;
     font-family: Georgia, "Times New Roman", serif;
     font-size: 22px;
     font-weight: 600;
-    letter-spacing: 0;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 2px rgba(18, 25, 55, 0.18);
 }
 
 @media (max-width: 720px) {

@@ -8,6 +8,7 @@
     padding: 5px 12px 0;
     overflow-x: auto;
     list-style: none;
+    scrollbar-width: thin;
 }
 
 #tab-list-item {
@@ -21,18 +22,24 @@
     height: 100%;
     padding: 0 13px;
     overflow: hidden;
-    color: #66776e;
+    color: #707b96;
     border: 1px solid transparent;
     border-bottom: 0;
-    border-radius: 5px 5px 0 0;
+    border-radius: 9px 9px 0 0;
     font-size: 12px;
+    font-weight: 550;
     cursor: pointer;
-    transition: color 150ms ease, background 150ms ease, border-color 150ms ease;
+    transition: color 170ms ease, background 170ms ease, border-color 170ms ease, box-shadow 170ms ease;
 }
 
 #tab-list-item:hover {
-    color: #236b55;
-    background: #eaf2ed;
+    color: #4655ba;
+    background: #eef0fb;
+}
+
+#tab-list-item[data-name]:focus-visible {
+    outline: 2px solid rgba(91, 105, 232, 0.45);
+    outline-offset: -2px;
 }
 
 #tab-list-item button {
@@ -40,15 +47,16 @@
     width: 20px;
     height: 20px;
     padding: 0;
-    color: #91a098;
+    color: #9aa3b7;
     background: transparent;
     border: 0;
-    border-radius: 4px;
+    border-radius: 6px;
     line-height: 1;
-    transition: color 150ms ease, background 150ms ease;
+    transition: color 150ms ease, background 150ms ease, transform 150ms ease;
 }
 
 #tab-list-item button:hover {
-    color: #a53c37;
-    background: #f8e9e7;
+    color: #bd4155;
+    background: #fff0f2;
+    transform: scale(1.08);
 }
