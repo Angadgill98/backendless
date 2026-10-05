@@ -14,4 +14,4 @@ export function SetupPostgresDB() {
             database: process.env.DB_NAME,
         })
     )
-} 
+}  
